@@ -1,6 +1,6 @@
 ﻿// This class represent all kind of living species animals, vegetals, bacterium, mushroom
 
-public abstract class Species : Object, SpeciesManager{
+public abstract class Species : Element, SpeciesManager{
     
     protected int longevity; //A species life expenctancy 
     protected float weight; 
@@ -15,5 +15,11 @@ public abstract class Species : Object, SpeciesManager{
     public abstract void feed(Species species);
     public abstract void drink();
     public abstract void death();
+
+    //Constructor
+
+    /* protected Spieces(){
+        base();
+    }*/
 
 }

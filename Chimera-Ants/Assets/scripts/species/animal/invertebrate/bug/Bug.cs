@@ -2,5 +2,7 @@
 
 
 public abstract class Bug: Invertebrate{
-    
+    /* protected Bug(){
+        base.();
+    }*/
 }

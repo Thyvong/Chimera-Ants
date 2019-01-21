@@ -19,4 +19,8 @@ public abstract class Animal : Species, AnimalManager{
    	public abstract void kill(Species species);
    	public abstract bool runAway();
    	public abstract void other();
+
+	/*protected Animal(){
+		base.();
+	}*/
 }

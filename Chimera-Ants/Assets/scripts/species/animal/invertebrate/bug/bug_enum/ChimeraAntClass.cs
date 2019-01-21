@@ -2,4 +2,4 @@
 
 public enum ChimeraAntClass{
     Queen, King, Soldier, Worker, KingGuard
-}
+};
