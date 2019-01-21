@@ -1,5 +1,5 @@
 ﻿//This class represent Chimera ants features and behaviour
-
+using System;
 
 public class ChimeraAnt : Bug, ChimeraAntManager{
     private ChimeraAntClass status;
@@ -21,9 +21,24 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
     // Species method
 	public override void developpement(){}
     public override Species reproduction(Species species){
-		this.status = ChimeraAntClass.Soldier | ChimeraAntClass.Worker;
-    	ChimeraAnt cAnt = new ChimeraAnt();
-    	return cAnt;
+		int rand = -1;
+		if(species.GetType() == typeof(ChimeraAnt)){
+			ChimeraAnt cAnt = new ChimeraAnt();
+			Random random = new Random();
+			rand = random.Next();
+			if(rand%2 == 0){
+				cAnt.status = ChimeraAntClass.Worker;
+			}
+			else{
+				cAnt.status = ChimeraAntClass.Soldier;
+			}
+			//print("status enfant = " + cAnt.status);
+			return cAnt;	
+			//print("OK");
+		}
+		//print("NO");
+		return null;
+
     }
     public override void feed(Species species){}
     public override void drink(){}
@@ -54,6 +69,10 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 	public void Start(){
 		ChimeraAnt cAnt = new ChimeraAnt(); 
 		cAnt.stateBehaviour();
-		print("STATE = " + cAnt.state); 
+
+		ChimeraAnt cAnt1 = new ChimeraAnt();
+		cAnt1.stateBehaviour();
+
+		cAnt.reproduction(cAnt1);
 	}
 }
