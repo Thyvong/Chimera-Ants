@@ -11,16 +11,18 @@ public abstract class Animal : Species, AnimalManager{
    protected GroupStyle[] groupStyle;
    protected DietaryRegime dietaryRegime;
    protected Sex sex;
+   protected State state;
 
-   	public abstract void groupBehaviour();
-   	public abstract void familyBehaviour();
-   	public abstract State stateBehaviour();
-	public abstract int dangerEvaluation();
-   	public abstract void kill(Species species);
-   	public abstract bool runAway();
-   	public abstract void other();
+   //private static int animalBoidIdReference = 0;
+   //protected int animalBoidId;
 
-	/*protected Animal(){
-		base.();
-	}*/
+   public abstract void groupBehaviour();
+   public abstract void familyBehaviour();
+   public abstract void stateBehaviour();
+   public abstract int dangerEvaluation();
+   public abstract void kill(Species species);
+   public abstract bool runAway();
+   public abstract void other();
+
+
 }

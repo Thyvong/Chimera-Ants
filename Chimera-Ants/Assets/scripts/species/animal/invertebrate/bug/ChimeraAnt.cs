@@ -4,11 +4,18 @@
 public class ChimeraAnt : Bug, ChimeraAntManager{
     private ChimeraAntClass status;
     private Species[] speciesGenomes;
+	
+	private static int antBoidIdReference = 0;
+    private int antBoidId;
 
 	//Constructor
-	public ChimeraAnt(){
-		print("id = " + this.id);
-		
+	private ChimeraAnt(){
+		this.status = ChimeraAntClass.Queen;
+		//print("id = " + this.id);
+		this.antBoidId = antBoidIdReference;
+		//print("ant boid id = " + antBoidId);
+		antBoidIdReference++;
+		//print("status = " + this.status);
 	}
     
     // Species method
@@ -21,11 +28,17 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
     public override void feed(Species species){}
     public override void drink(){}
     public override void death(){}
+	
 	// Animal method
     public override void groupBehaviour(){}
    	public override void familyBehaviour(){}
-   	public override State stateBehaviour(){
-   		return State.Leader;
+   	public override void stateBehaviour(){
+		if(this.status == ChimeraAntClass.Queen || this.status == ChimeraAntClass.King){
+			this.state =  State.Leader;
+		}
+		else{
+			this.state = State.Follower;
+		}
    	}
 	public override int dangerEvaluation(){
 		return 0;
@@ -39,6 +52,8 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
     public void geneticalEvolution(){}
 
 	public void Start(){
-		ChimeraAnt cAnt = new ChimeraAnt();  
+		ChimeraAnt cAnt = new ChimeraAnt(); 
+		cAnt.stateBehaviour();
+		print("STATE = " + cAnt.state); 
 	}
 }

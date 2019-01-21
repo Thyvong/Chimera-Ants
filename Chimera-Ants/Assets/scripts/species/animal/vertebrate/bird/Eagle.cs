@@ -14,8 +14,8 @@ public class Eagle : Bird{
 	// Animal method
     public override void groupBehaviour(){}
    	public override void familyBehaviour(){}
-   	public override State stateBehaviour(){
-   		return State.Leader;
+   	public override void stateBehaviour(){
+   		//return State.Leader;
    	}
 	public override int dangerEvaluation(){
 		return 0;
