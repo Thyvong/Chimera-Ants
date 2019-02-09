@@ -3,4 +3,7 @@
 
 public abstract class Invertebrate: Animal{
     
+    /*protected Invertebrate(){
+        base();
+    }*/
 }
