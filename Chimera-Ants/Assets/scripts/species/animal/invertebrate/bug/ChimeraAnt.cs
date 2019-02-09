@@ -12,6 +12,8 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 
 	//Constructor
 	private ChimeraAnt(){
+
+		
 		this.setAnimalBoidId(0);
 
 		print("ANIMAL BOID = " + getAnimalBoidId());
@@ -25,13 +27,16 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 	}
     
     // Species method
+	public void deplacement(){
+		this.model.transform.Translate(120,200,340);
+	}
 	public override void developpement(){}
     public override Species reproduction(Species species){
 		int rand = -1;
 		if(species.GetType() == typeof(ChimeraAnt)){
 			ChimeraAnt cAnt = new ChimeraAnt();
 			cAnt.antBoidId = this.antBoidId;
-			print("cAnt boid number = "+ cAnt.antBoidId);
+			//print("cAnt boid number = "+ cAnt.antBoidId);
 
 			Random random = new Random();
 			rand = random.Next();
@@ -41,7 +46,7 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 			else{
 				cAnt.status = ChimeraAntClass.Soldier;
 			}
-			print("status enfant = " + cAnt.status);
+			//print("status enfant = " + cAnt.status);
 			return cAnt;	
 			//print("OK");
 		}
@@ -59,11 +64,11 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
    	public override void stateBehaviour(){
 		if(this.status == ChimeraAntClass.Queen || this.status == ChimeraAntClass.King){
 			this.setState(State.Leader);
-			print("Leader");
+			//print("Leader");
 		}
 		else{
 			this.setState(State.Follower);
-			print("Follower");
+			//print("Follower");
 		}
    	}
 	public override int dangerEvaluation(Species species){
@@ -113,5 +118,17 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 		cAnt1.stateBehaviour();
 
 		cAnt.reproduction(cAnt1);
+
+		print("model1 " + cAnt.model );
+		cAnt.createModel("ChimeraAnt");
+		print("model2 " + cAnt.model );
+		print("position1 " + cAnt.model.transform.position );
+		cAnt.deplacement();
+		print("position2 " + cAnt.model.transform.position );
+	}
+
+	public void Update(){
+		this.transform.Translate(0,50,0);
+		print("update");
 	}
 }

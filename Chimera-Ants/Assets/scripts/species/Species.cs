@@ -12,6 +12,8 @@ public abstract class Species : Element, SpeciesManager{
 
     //private static int speciesBoidIdReference = 0;
     //protected int spiecesBoidId;
+
+    //public abstract void deplacement();
     public abstract void developpement();
     public abstract Species reproduction(Species species);
     public abstract void feed(Species species);

@@ -14,5 +14,10 @@ public abstract class Element : MonoBehaviour{
 
    }
 
+   protected void createModel(string name){
+      model = new GameObject(name);
+      model.AddComponent<Rigidbody>();
+   }
+
 
 }
