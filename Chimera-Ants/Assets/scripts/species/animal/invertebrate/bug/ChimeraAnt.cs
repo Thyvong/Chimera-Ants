@@ -27,8 +27,8 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 	}
     
     // Species method
-	public void deplacement(){
-		this.model.transform.Translate(120,200,340);
+	public void deplacement(float x, float y, float z){
+		this.model.transform.Translate(x,y,z);
 	}
 	public override void developpement(){}
     public override Species reproduction(Species species){
@@ -123,12 +123,12 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 		cAnt.createModel("ChimeraAnt");
 		print("model2 " + cAnt.model );
 		print("position1 " + cAnt.model.transform.position );
-		cAnt.deplacement();
+		//cAnt.deplacement(30,0,40);
 		print("position2 " + cAnt.model.transform.position );
 	}
 
 	public void Update(){
-		this.transform.Translate(0,50,0);
-		print("update");
+		//cAnt.deplacement(30,0,40);
+		//print("update");
 	}
 }
