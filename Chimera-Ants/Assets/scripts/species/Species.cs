@@ -20,6 +20,14 @@ public abstract class Species : Element, SpeciesManager{
     public abstract void drink();
     public abstract void death();
 
+<<<<<<< HEAD
     //protected setSpiecesBoidReference    
+=======
+    //Constructor
+
+    /* protected Spieces(){
+        base();
+    }*/
+>>>>>>> fb551fe5bb3aa1c851881da8de5dde07ef8b54cd
 
 }

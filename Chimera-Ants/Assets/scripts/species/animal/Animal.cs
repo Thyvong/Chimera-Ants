@@ -7,6 +7,7 @@ using DietaryRegime;
 using AnimalManager;*/
 
 public abstract class Animal : Species, AnimalManager{
+<<<<<<< HEAD
    private NutritionStyle[] nutritionStyle;
    private GroupStyle[] groupStyle;
    private DietaryRegime dietaryRegime;
@@ -72,4 +73,22 @@ public abstract class Animal : Species, AnimalManager{
    public abstract void other();
 
 
+=======
+   protected NutritionStyle[] nutritionStyle;
+   protected GroupStyle[] groupStyle;
+   protected DietaryRegime dietaryRegime;
+   protected Sex sex;
+
+   	public abstract void groupBehaviour();
+   	public abstract void familyBehaviour();
+   	public abstract State stateBehaviour();
+	public abstract int dangerEvaluation();
+   	public abstract void kill(Species species);
+   	public abstract bool runAway();
+   	public abstract void other();
+
+	/*protected Animal(){
+		base.();
+	}*/
+>>>>>>> fb551fe5bb3aa1c851881da8de5dde07ef8b54cd
 }

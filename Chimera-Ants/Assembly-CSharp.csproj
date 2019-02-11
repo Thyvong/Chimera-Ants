@@ -56,6 +56,7 @@
      <Compile Include="Assets\scripts\Coordinate.cs" />
      <Compile Include="Assets\scripts\Element.cs" />
      <Compile Include="Assets\scripts\environement\zone\AreaManager.cs" />
+<<<<<<< HEAD
      <Compile Include="Assets\scripts\environement\zone\Biome.cs" />
      <Compile Include="Assets\scripts\environement\zone\climat\Climat.cs" />
      <Compile Include="Assets\scripts\environement\zone\climat\ClimatManager.cs" />
@@ -63,6 +64,11 @@
      <Compile Include="Assets\scripts\environement\zone\MapsGenerator.cs" />
      <Compile Include="Assets\scripts\environement\zone\territory\Territory.cs" />
      <Compile Include="Assets\scripts\environement\zone\territory\TerritoryManager.cs" />
+=======
+     <Compile Include="Assets\scripts\environement\zone\climat\Climat.cs" />
+     <Compile Include="Assets\scripts\environement\zone\climat\ClimatManager.cs" />
+     <Compile Include="Assets\scripts\environement\zone\territory\Territory.cs" />
+>>>>>>> fb551fe5bb3aa1c851881da8de5dde07ef8b54cd
      <Compile Include="Assets\scripts\environement\zone\Zone.cs" />
      <Compile Include="Assets\scripts\species\animal\Animal.cs" />
      <Compile Include="Assets\scripts\species\animal\animal_enum\DietaryRegime.cs" />
