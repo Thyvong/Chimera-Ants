@@ -1,5 +1,6 @@
 ﻿//This class represent Chimera ants features and behaviour
 using System;
+//using UnityEngine;
 
 public class ChimeraAnt : Bug, ChimeraAntManager{
     private ChimeraAntClass status;
@@ -12,43 +13,48 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 
 	//Constructor
 	private ChimeraAnt(){
-
 		
 		this.setAnimalBoidId(0);
 
-		print("ANIMAL BOID = " + getAnimalBoidId());
-
 		this.status = ChimeraAntClass.Queen;
-		//print("id = " + this.id);
+
 		this.antBoidId = antBoidIdReference;
-		//print("ant boid id = " + antBoidId);
+		
 		antBoidIdReference++;
-		//print("status = " + this.status);
 	}
     
     // Species method
 	public void deplacement(float x, float y, float z){
 		this.model.transform.Translate(x,y,z);
 	}
+
 	public override void developpement(){}
+
     public override Species reproduction(Species species){
 		int rand = -1;
 		if(species.GetType() == typeof(ChimeraAnt)){
-			ChimeraAnt cAnt = new ChimeraAnt();
-			cAnt.antBoidId = this.antBoidId;
-			//print("cAnt boid number = "+ cAnt.antBoidId);
+			print("its a chimera ant");
+			ChimeraAnt cAntChild = Instantiate<ChimeraAnt>(this);
+			cAntChild.antBoidId = this.antBoidId;
+			print("cAnt Child boid number = "+ cAntChild.antBoidId);
 
 			Random random = new Random();
 			rand = random.Next();
 			if(rand%2 == 0){
-				cAnt.status = ChimeraAntClass.Worker;
+				cAntChild.status = ChimeraAntClass.Worker;
 			}
 			else{
-				cAnt.status = ChimeraAntClass.Soldier;
+				cAntChild.status = ChimeraAntClass.Soldier;
 			}
-			//print("status enfant = " + cAnt.status);
-			return cAnt;	
+			print("status enfant = " + cAntChild.status);
+				
 			//print("OK");
+			print("reproduction !");
+
+			print("/n/n");
+
+			cAntChild.model.transform.Translate(150.0f,203.0f,100.0f);
+			return cAntChild;
 		}
 		//print("NO");
 		return null;
@@ -110,25 +116,34 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
     //Chimera-ants special method
     public void geneticalEvolution(){}
 
-	public void Start(){
-		ChimeraAnt cAnt = new ChimeraAnt(); 
-		cAnt.stateBehaviour();
+	public void Start(){ 
+		//stateBehaviour();
 
-		ChimeraAnt cAnt1 = new ChimeraAnt();
-		cAnt1.stateBehaviour();
+		reproduction(new ChimeraAnt());
 
-		cAnt.reproduction(cAnt1);
-
-		print("model1 " + cAnt.model );
-		cAnt.createModel("ChimeraAnt");
-		print("model2 " + cAnt.model );
-		print("position1 " + cAnt.model.transform.position );
+		//print("model1 " + cAnt.model );
+		//cAnt.createModel("ChimeraAnt");
+		//print("model2 " + cAnt.model );
+		//print("position1 " + cAnt.model.transform.position );
 		//cAnt.deplacement(0,0,0);
-		print("position2 " + cAnt.model.transform.position );
+		//print("position2 " + cAnt.model.transform.position );
+
+		print("it's starting");
 	}
 
 	public void Update(){
+
 		//cAnt.deplacement(30,0,40);
 		//print("update");
+		//float update = 0.0f;
+
+		//update += ;
+
+		//if (update > 5.0f){
+		//reproduction(new ChimeraAnt());
+		//update = 0.0f;
+		//print("it's update");
+		//}
+		
 	}
 }
