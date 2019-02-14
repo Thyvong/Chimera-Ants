@@ -4,18 +4,36 @@ using UnityEngine;
 
 public class ChimeraAnt : Bug, ChimeraAntManager{
 
-    
+    public GameObject ant;
 
-    private ChimeraAntClass status; // Ant class ranking
+    public ChimeraAntClass status; // Ant class ranking
     private Species[] speciesGenomes; // Assimililated species genomes
 	private static int antBoidIdReference = 0; // nb of boid groups created
     private int antBoidId; // personal id for boid groups
+
+    public int cpt=0;
 
     public void Start()
     {
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
         print(antBoidIdReference); // set by reproduction or at initialize
+        switch (status) {
+
+            case ChimeraAntClass.Queen:
+                {
+                    transform.localScale = new Vector3(50, 50, 50);
+                }break;
+
+            case ChimeraAntClass.Soldier:
+                {
+                    transform.localScale = new Vector3(30, 30, 30);
+                }
+                break;
+                
+            default:
+                break;
+        }
     }
 
     //Constructor
@@ -50,6 +68,7 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 				cAnt.status = ChimeraAntClass.Soldier;
 			}
 			print("status enfant = " + cAnt.status);
+            Instantiate(ant, transform.position+new Vector3(rand/2,0,rand).normalized * 10, new Quaternion(0, rand, 0,0));
 			return cAnt;	
 			//print("OK");
 		}
@@ -120,7 +139,10 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 
     private void FixedUpdate()
     {
+        cpt++;
         Move();
+        if (status == ChimeraAntClass.Queen && cpt%200==0 )
+            reproduction(new ChimeraAnt());
     }
 
 
