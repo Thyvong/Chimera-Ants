@@ -1,17 +1,25 @@
 ﻿//This class represent Chimera ants features and behaviour
 using System;
+using UnityEngine;
 
 public class ChimeraAnt : Bug, ChimeraAntManager{
-    private ChimeraAntClass status;
-    private Species[] speciesGenomes;
-	
-	private static int antBoidIdReference = 0;
-    private int antBoidId;
 
-	//public GameObject antModel;
+    
 
-	//Constructor
-	private ChimeraAnt(){
+    private ChimeraAntClass status; // Ant class ranking
+    private Species[] speciesGenomes; // Assimililated species genomes
+	private static int antBoidIdReference = 0; // nb of boid groups created
+    private int antBoidId; // personal id for boid groups
+
+    public void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+        animator = GetComponent<Animator>();
+        print(antBoidIdReference); // set by reproduction or at initialize
+    }
+
+    //Constructor
+    private ChimeraAnt(){
 		this.setAnimalBoidId(0);
 
 		print("ANIMAL BOID = " + getAnimalBoidId());
@@ -33,7 +41,7 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 			cAnt.antBoidId = this.antBoidId;
 			print("cAnt boid number = "+ cAnt.antBoidId);
 
-			Random random = new Random();
+            System.Random random = new System.Random();
 			rand = random.Next();
 			if(rand%2 == 0){
 				cAnt.status = ChimeraAntClass.Worker;
@@ -52,8 +60,13 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
     public override void feed(Species species){}
     public override void drink(){}
     public override void death(){}
-	
-	// Animal method
+
+    // Animal method
+    public override void Move()
+    {
+        rb.MovePosition(transform.position + transform.forward * Time.fixedDeltaTime);
+        return;
+    }
     public override void groupBehaviour(){}
    	public override void familyBehaviour(){}
    	public override void stateBehaviour(){
@@ -105,13 +118,10 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
     //Chimera-ants special method
     public void geneticalEvolution(){}
 
-	public void Start(){
-		ChimeraAnt cAnt = new ChimeraAnt(); 
-		cAnt.stateBehaviour();
+    private void FixedUpdate()
+    {
+        Move();
+    }
 
-		ChimeraAnt cAnt1 = new ChimeraAnt();
-		cAnt1.stateBehaviour();
 
-		cAnt.reproduction(cAnt1);
-	}
 }

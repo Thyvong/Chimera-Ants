@@ -27,7 +27,7 @@ public class WorldTime : MonoBehaviour{
     {
         get
         {
-            if (_date == null)
+            if (_date ==null)
             {
                 _date = new DateTime();
             }

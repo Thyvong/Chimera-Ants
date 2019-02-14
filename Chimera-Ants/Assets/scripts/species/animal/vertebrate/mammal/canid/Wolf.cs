@@ -1,5 +1,5 @@
 ﻿//This class represents wolves behaviour and features
-
+using UnityEngine;
 public class Wolf : Canid{
     // Species method
 	public override void developpement(){}
@@ -10,7 +10,12 @@ public class Wolf : Canid{
     public override void feed(Species species){}
     public override void drink(){}
     public override void death(){}
-	// Animal method
+    // Animal method
+    public override void Move()
+    {
+        rb.MovePosition(transform.position + transform.forward * Time.fixedDeltaTime);
+        return;
+    }
     public override void groupBehaviour(){}
    	public override void familyBehaviour(){}
    	public override void stateBehaviour(){

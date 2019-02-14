@@ -1,7 +1,11 @@
 ﻿// This class represent all kind of living species animals, vegetals, bacterium, mushroom
 
+using UnityEngine;
+
 public abstract class Species : Element, SpeciesManager{
-    
+
+    protected Rigidbody rb;
+    protected Animator animator;
     protected int longevity; //A species life expenctancy 
     protected float weight; 
     protected float strength; //the strength value of a spieces

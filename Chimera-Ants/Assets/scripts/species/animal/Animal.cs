@@ -62,7 +62,7 @@ public abstract class Animal : Species, AnimalManager{
    protected void setState(State state){
       this.state = state;
    }
-
+    public abstract void Move();
    public abstract void groupBehaviour();
    public abstract void familyBehaviour();
    public abstract void stateBehaviour();

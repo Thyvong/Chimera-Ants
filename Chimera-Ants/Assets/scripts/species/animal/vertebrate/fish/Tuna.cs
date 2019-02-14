@@ -1,5 +1,7 @@
 ﻿//This class represents tunas behaviour and features
 
+using UnityEngine;
+
 public class Tuna : Fish{
     // Species method
 	public override void developpement(){}
@@ -10,7 +12,12 @@ public class Tuna : Fish{
     public override void feed(Species species){}
     public override void drink(){}
     public override void death(){}
-	// Animal method
+    // Animal method
+    public override void Move()
+    {
+        rb.MovePosition(transform.position + transform.forward * Time.fixedDeltaTime);
+        return;
+    }
     public override void groupBehaviour(){}
    	public override void familyBehaviour(){}
    	public override void stateBehaviour(){
