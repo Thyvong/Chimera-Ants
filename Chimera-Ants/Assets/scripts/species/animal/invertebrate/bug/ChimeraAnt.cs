@@ -80,9 +80,9 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
     public override void drink(){}
 
 	//A faire remonter dans Spieces 
-    public override void death(){
+    public void death(){
 		if(lifePoint <= 0){
-			death()
+			
 		}
 	}
 	
@@ -139,9 +139,8 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 		while(species.getLifePoint() < 0){
 			species.setLifePoint( (getStrenght() * getWeight()) / ( species.getResistance() * species.getWeight() ) );
 
-			if(species.getLifePoint() <= 0){
-				death()
-			}
+			species.death();
+			
 		}
 	}
    	

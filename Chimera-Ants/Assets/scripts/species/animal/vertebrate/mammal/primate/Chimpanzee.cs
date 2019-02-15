@@ -10,7 +10,7 @@ public class Chimpanzee : Primate{
     }
     public void feed(Species species){}
     public override void drink(){}
-    public override void death(){}
+    public void death(){}
 	// Animal method
     public override void groupBehaviour(){}
    	public override void familyBehaviour(){}

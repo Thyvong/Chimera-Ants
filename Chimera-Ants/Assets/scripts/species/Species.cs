@@ -20,7 +20,7 @@ public abstract class Species : Element, SpeciesManager{
     public abstract Species reproduction(Species species);
     
     public abstract void drink();
-    public abstract void death();
+    
 
     protected void feed(Species species){
         restoreLifePoint();
@@ -35,6 +35,11 @@ public abstract class Species : Element, SpeciesManager{
         this.model.transform.Translate(x,y,z);
     }
 
+    public void death(){
+        if(lifePoint <= 0){
+            Destroy(this.getModel());
+		} 
+    }
     public int getLongevity(){
         return longevity;
     }
