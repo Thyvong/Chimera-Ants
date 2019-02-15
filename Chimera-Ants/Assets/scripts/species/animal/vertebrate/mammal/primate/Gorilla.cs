@@ -1,5 +1,5 @@
 ﻿//This class represents gorilla behaviour and features
-using UnityEngine;
+
 public class Gorilla : Primate{
     // Species method
 	public override void developpement(){}
@@ -7,25 +7,20 @@ public class Gorilla : Primate{
     	Gorilla gorilla = new Gorilla();
     	return gorilla;
     }
-    public override void feed(Species species){}
+    public void feed(Species species){}
     public override void drink(){}
-    public override void death(){}
-    // Animal method
-    public override void Move()
-    {
-        rb.MovePosition(transform.position + transform.forward * Time.fixedDeltaTime);
-        return;
-    }
+    public void death(){}
+	// Animal method
     public override void groupBehaviour(){}
    	public override void familyBehaviour(){}
    	public override void stateBehaviour(){
    		//return State.Leader;
    	}
-	public override int dangerEvaluation(Species species){
-		return 0;
+	public void dangerEvaluation(Species species){
+		//return 0;
 	}
    	public override void kill(Species species){}
-   	public override bool runAway(){
+   	public override bool runAway(Animal animal){
    		return false;
    	}
    	public override void other(){}

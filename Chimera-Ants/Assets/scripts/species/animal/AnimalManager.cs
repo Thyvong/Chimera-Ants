@@ -5,8 +5,8 @@ interface AnimalManager{
     void groupBehaviour();
     void familyBehaviour();
     void stateBehaviour();
-    int dangerEvaluation(Species species);
+    void dangerEvaluation(Species species);
     void kill(Species species);
-    bool runAway();
+    bool runAway(Animal animal);
     void other();
 }

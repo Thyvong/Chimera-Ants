@@ -1,149 +1,187 @@
 ﻿//This class represent Chimera ants features and behaviour
 using System;
-using UnityEngine;
+//using UnityEngine;
 
 public class ChimeraAnt : Bug, ChimeraAntManager{
 
-    public GameObject ant;
+    private ChimeraAntClass status;
+    private Species[] speciesGenomes;
+	
+	private static int antBoidIdReference = 0;
+    private int antBoidId;
 
-    public ChimeraAntClass status; // Ant class ranking
-    private Species[] speciesGenomes; // Assimililated species genomes
-	private static int antBoidIdReference = 0; // nb of boid groups created
-    private int antBoidId; // personal id for boid groups
+	
 
-    public int cpt=0;
-
-    public void Start()
-    {
-        rb = GetComponent<Rigidbody>();
-        animator = GetComponent<Animator>();
-        print(antBoidIdReference); // set by reproduction or at initialize
-        switch (status) {
-
-            case ChimeraAntClass.Queen:
-                {
-                    transform.localScale = new Vector3(50, 50, 50);
-                }break;
-
-            case ChimeraAntClass.Soldier:
-                {
-                    transform.localScale = new Vector3(30, 30, 30);
-                }
-                break;
-                
-            default:
-                break;
-        }
-    }
-
-    //Constructor
-    private ChimeraAnt(){
+	//Constructor
+	private ChimeraAnt(){
+		
 		this.setAnimalBoidId(0);
 
-		print("ANIMAL BOID = " + getAnimalBoidId());
-
 		this.status = ChimeraAntClass.Queen;
-		//print("id = " + this.id);
+
 		this.antBoidId = antBoidIdReference;
-		//print("ant boid id = " + antBoidId);
 		antBoidIdReference++;
-		//print("status = " + this.status);
+
+		this.sex = Sex.Female;
 	}
     
     // Species method
+
+	//A faire remonter dans Species
+	public void deplacement(float x, float z){
+		base.deplacement(x,0,z);
+	}
+
 	public override void developpement(){}
+
+	//Fait
     public override Species reproduction(Species species){
 		int rand = -1;
-		if(species.GetType() == typeof(ChimeraAnt)){
-			ChimeraAnt cAnt = new ChimeraAnt();
-			cAnt.antBoidId = this.antBoidId;
-			print("cAnt boid number = "+ cAnt.antBoidId);
 
-            System.Random random = new System.Random();
-			rand = random.Next();
-			if(rand%2 == 0){
-				cAnt.status = ChimeraAntClass.Worker;
+		if(species.GetType() == typeof(ChimeraAnt)){
+			ChimeraAnt ant = (ChimeraAnt) species;
+			
+			if( (status == ChimeraAntClass.Queen && ant.status == ChimeraAntClass.King) || status == ChimeraAntClass.King && ant.status == ChimeraAntClass.Queen){
+				print("its a chimera ant");
+
+				if(this == null){
+					print("c'est null");
+				}
+				ChimeraAnt cAntChild = Instantiate<ChimeraAnt>(this);
+				cAntChild.antBoidId = ant.antBoidId;
+				print("cAnt Child boid number = "+ cAntChild.antBoidId);
+
+				Random random = new Random();
+				rand = random.Next();
+
+				print("rand " + rand);
+
+				if(rand%2 == 0){
+					cAntChild.sex = Sex.Male;
+				}
+				else{
+					cAntChild.sex = Sex.Female;
+					
+				}
+
+				rand = random.Next();
+				
+				if(rand%2 == 0){
+					cAntChild.status = ChimeraAntClass.Worker;
+				}
+				else{
+					cAntChild.status = ChimeraAntClass.Soldier;
+				}
+
+				print("status enfant = " + cAntChild.status);
+
+				print("sex enfant" + cAntChild.sex);
+					
+				print("reproduction !");
+
+				print("/n/n");
+
+				return cAntChild;
 			}
-			else{
-				cAnt.status = ChimeraAntClass.Soldier;
-			}
-			print("status enfant = " + cAnt.status);
-            Instantiate(ant, transform.position+new Vector3(rand/2,0,rand).normalized * 10, new Quaternion(0, rand, 0,0));
-			return cAnt;	
-			//print("OK");
 		}
-		//print("NO");
 		return null;
 
     }
-    public override void feed(Species species){}
+    
+	//Fait
+	public void feed(Species species){
+		if(species.GetType() == typeof(Animal) || species.GetType() == typeof(Vegetal)){
+			base.feed(species);
+		}
+	}
+	
+	//A faire remonter dans Spieces
     public override void drink(){}
-    public override void death(){}
 
-    // Animal method
-    public override void Move()
-    {
-        rb.MovePosition(transform.position + transform.forward * Time.fixedDeltaTime);
-        return;
-    }
+	
+	// Animal method
+
     public override void groupBehaviour(){}
    	public override void familyBehaviour(){}
+
+	//Fait
    	public override void stateBehaviour(){
 		if(this.status == ChimeraAntClass.Queen || this.status == ChimeraAntClass.King){
 			this.setState(State.Leader);
-			print("Leader");
+			//print("Leader");
 		}
 		else{
 			this.setState(State.Follower);
-			print("Follower");
+			//print("Follower");
 		}
    	}
-	public override int dangerEvaluation(Species species){
-		int dangerLvl = 0;
 
-		if(species.GetType() == typeof(Animal)){
-			Animal animal = (Animal) species;
-			if(animal.getAnimalBoidId() != this.getAnimalBoidId()){
-				dangerLvl++;
-			}
-			if(animal.getDietaryRegime() != DietaryRegime.Vegetarian){
-				dangerLvl++;
-			}
-			if(animal.getState() == State.Leader){
-				dangerLvl++;
-			}
-			if(species.GetType() == typeof(ChimeraAnt)){
-				ChimeraAnt cAnt = (ChimeraAnt) species;
+	//A faire remonter dans Animal
+	public void dangerEvaluation(Species species){
+		
+		base.dangerEvaluation(species);
 
-				if(cAnt.antBoidId != this.antBoidId){
-					if(cAnt.status == ChimeraAntClass.King){
-						dangerLvl = dangerLvl+2;
-					}
+		if(species.GetType() == typeof(ChimeraAnt)){
+			ChimeraAnt cAnt = (ChimeraAnt) species;
+
+			if(cAnt.antBoidId != this.antBoidId){
+				if(cAnt.status == ChimeraAntClass.King){
+					increaseDangerLvl(3);
+				}
 					
-					if(cAnt.status == ChimeraAntClass.KingGuard){
-						dangerLvl++;
-					}
+				if(cAnt.status == ChimeraAntClass.KingGuard){
+					increaseDangerLvl(2);;
 				}
 			}
 		}
-
-		return dangerLvl;
 	}
-   	public override void kill(Species species){}
-   	public override bool runAway(){
+   	
+	//A faire dans Animal
+	public override void kill(Species species){
+		
+		while(species.getLifePoint() > 0){
+			species.setLifePoint( species.getLifePoint() - (getStrenght() * getWeight()) / ( species.getResistance() * species.getWeight() ) );
+
+			species.death();
+			
+		}
+	}
+   	
+	//A faire dans Animal
+	public override bool runAway(Animal animal){
+
+		if(dangerLvl >= 3){
+			int rand = -1;
+			Random random = new Random();
+			rand = random.Next(0,10);
+
+			if(animal.getDangerLvl() > 3){
+				rand -= random.Next(1,animal.getDangerLvl());
+			}
+
+			if(animal.getDangerLvl() <= 3){
+				rand += random.Next(1,animal.getDangerLvl());
+			}
+
+			if(rand >= 5){
+				return true;
+			}
+			
+		}
    		return false;
    	}
    	public override void other(){}
     //Chimera-ants special method
     public void geneticalEvolution(){}
 
-    private void FixedUpdate()
-    {
-        cpt++;
-        Move();
-        if (status == ChimeraAntClass.Queen && cpt%200==0 )
-            reproduction(new ChimeraAnt());
-    }
+	public void Start(){ 
+		
+		
 
+	}
 
+	public void Update(){
+		
+
+	}
 }
