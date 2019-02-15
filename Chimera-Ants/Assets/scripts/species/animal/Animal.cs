@@ -64,6 +64,21 @@ public abstract class Animal : Species, AnimalManager{
       this.state = state;
    }
 
+   public void dangerEvaluation(Species species){
+
+      if(species.GetType() == typeof(Animal)){
+			Animal animal = (Animal) species;
+			if(animal.getAnimalBoidId() != this.getAnimalBoidId()){
+				increaseDangerLvl(1);
+			}
+			if(animal.getDietaryRegime() != this.getDietaryRegime()){
+				increaseDangerLvl(2);
+			}
+			if(animal.getState() == State.Leader){
+				increaseDangerLvl(2);
+			}
+      }
+   }
    public int getDangerLvl(){
       return dangerLvl;
    }
@@ -79,7 +94,7 @@ public abstract class Animal : Species, AnimalManager{
    public abstract void groupBehaviour();
    public abstract void familyBehaviour();
    public abstract void stateBehaviour();
-   public abstract void dangerEvaluation(Species species);
+   
    public abstract void kill(Species species);
    public abstract bool runAway(Animal animal);
    public abstract void other();

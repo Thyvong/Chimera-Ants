@@ -20,7 +20,6 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 		this.status = ChimeraAntClass.Queen;
 
 		this.antBoidId = antBoidIdReference;
-		
 		antBoidIdReference++;
 
 		this.sex = Sex.Female;
@@ -38,25 +37,45 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 	//Fait
     public override Species reproduction(Species species){
 		int rand = -1;
+
 		if(species.GetType() == typeof(ChimeraAnt)){
 			ChimeraAnt ant = (ChimeraAnt) species;
-			if(status == ChimeraAntClass.Queen && ant.status == ChimeraAntClass.King){
+			
+			if( (status == ChimeraAntClass.Queen && ant.status == ChimeraAntClass.King) || status == ChimeraAntClass.King && ant.status == ChimeraAntClass.Queen){
 				print("its a chimera ant");
-				
+
+				if(this == null){
+					print("c'est null");
+				}
 				ChimeraAnt cAntChild = Instantiate<ChimeraAnt>(this);
-				cAntChild.antBoidId = this.antBoidId;
+				cAntChild.antBoidId = ant.antBoidId;
 				print("cAnt Child boid number = "+ cAntChild.antBoidId);
 
 				Random random = new Random();
 				rand = random.Next();
 
+				print("rand " + rand);
+
+				if(rand%2 == 0){
+					cAntChild.sex = Sex.Male;
+				}
+				else{
+					cAntChild.sex = Sex.Female;
+					
+				}
+
+				rand = random.Next();
+				
 				if(rand%2 == 0){
 					cAntChild.status = ChimeraAntClass.Worker;
 				}
 				else{
 					cAntChild.status = ChimeraAntClass.Soldier;
 				}
+
 				print("status enfant = " + cAntChild.status);
+
+				print("sex enfant" + cAntChild.sex);
 					
 				print("reproduction !");
 
@@ -79,12 +98,6 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 	//A faire remonter dans Spieces
     public override void drink(){}
 
-	//A faire remonter dans Spieces 
-    public void death(){
-		if(lifePoint <= 0){
-			
-		}
-	}
 	
 	// Animal method
 
@@ -103,31 +116,21 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 		}
    	}
 
-	//Afaire remonter dans Animal
-	public override void dangerEvaluation(Species species){
+	//A faire remonter dans Animal
+	public void dangerEvaluation(Species species){
+		
+		base.dangerEvaluation(species);
 
-		if(species.GetType() == typeof(Animal)){
-			Animal animal = (Animal) species;
-			if(animal.getAnimalBoidId() != this.getAnimalBoidId()){
-				increaseDangerLvl(1);
-			}
-			if(animal.getDietaryRegime() != DietaryRegime.Vegetarian){
-				increaseDangerLvl(2);;
-			}
-			if(animal.getState() == State.Leader){
-				increaseDangerLvl(2);;
-			}
-			if(species.GetType() == typeof(ChimeraAnt)){
-				ChimeraAnt cAnt = (ChimeraAnt) species;
+		if(species.GetType() == typeof(ChimeraAnt)){
+			ChimeraAnt cAnt = (ChimeraAnt) species;
 
-				if(cAnt.antBoidId != this.antBoidId){
-					if(cAnt.status == ChimeraAntClass.King){
-						increaseDangerLvl(3);;
-					}
+			if(cAnt.antBoidId != this.antBoidId){
+				if(cAnt.status == ChimeraAntClass.King){
+					increaseDangerLvl(3);
+				}
 					
-					if(cAnt.status == ChimeraAntClass.KingGuard){
-						increaseDangerLvl(2);;
-					}
+				if(cAnt.status == ChimeraAntClass.KingGuard){
+					increaseDangerLvl(2);;
 				}
 			}
 		}
@@ -136,8 +139,8 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 	//A faire dans Animal
 	public override void kill(Species species){
 		
-		while(species.getLifePoint() < 0){
-			species.setLifePoint( (getStrenght() * getWeight()) / ( species.getResistance() * species.getWeight() ) );
+		while(species.getLifePoint() > 0){
+			species.setLifePoint( species.getLifePoint() - (getStrenght() * getWeight()) / ( species.getResistance() * species.getWeight() ) );
 
 			species.death();
 			
@@ -172,23 +175,13 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
     public void geneticalEvolution(){}
 
 	public void Start(){ 
-		//stateBehaviour();
+		
+		
 
-		//reproduction(new ChimeraAnt());
-
-		//print("model1 " + cAnt.model );
-		//cAnt.createModel("ChimeraAnt");
-		//print("model2 " + cAnt.model );
-		//print("position1 " + cAnt.model.transform.position );
-		//cAnt.deplacement(0,0,0);
-		//print("position2 " + cAnt.model.transform.position );
-
-		print("it's starting");
 	}
 
 	public void Update(){
+		
 
-		//cAnt.deplacement(30,0,40);
-		//print("update");
 	}
 }

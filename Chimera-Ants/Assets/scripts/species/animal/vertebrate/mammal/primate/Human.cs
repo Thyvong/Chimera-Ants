@@ -17,7 +17,7 @@ public class Human : Primate, HumanManager{
    	public override void stateBehaviour(){
    		//return State.Leader;
    	}
-	public override void dangerEvaluation(Species species){
+	public void dangerEvaluation(Species species){
 		//return ;
 	}
    	public override void kill(Species species){}

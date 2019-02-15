@@ -32,12 +32,12 @@ public abstract class Species : Element, SpeciesManager{
     }
 
     protected void deplacement(float x, float y, float z){
-        this.model.transform.Translate(x,y,z);
+        this.transform.Translate(x,y,z);
     }
 
     public void death(){
         if(lifePoint <= 0){
-            Destroy(this.getModel());
+            Destroy(this);
 		} 
     }
     public int getLongevity(){

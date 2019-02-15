@@ -16,7 +16,7 @@ public class Lizard : Reptile{
    	public override void stateBehaviour(){
    		//return State.Leader;
    	}
-	public override void dangerEvaluation(Species species){
+	public void dangerEvaluation(Species species){
 		//return 0;
 	}
    	public override void kill(Species species){}
