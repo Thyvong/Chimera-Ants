@@ -5,7 +5,7 @@ interface SpeciesManager{
 
     Species reproduction(Species species);
 
-    void feed(Species species);
+    //void feed(Species species);
 
     void drink();
 

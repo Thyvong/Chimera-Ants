@@ -7,14 +7,15 @@ using DietaryRegime;
 using AnimalManager;*/
 
 public abstract class Animal : Species, AnimalManager{
-   private NutritionStyle[] nutritionStyle;
-   private GroupStyle[] groupStyle;
-   private DietaryRegime dietaryRegime;
-   private Sex sex;
-   private State state;
+   protected NutritionStyle[] nutritionStyle;
+   protected GroupStyle[] groupStyle;
+   protected DietaryRegime dietaryRegime;
+   protected Sex sex;
+   protected State state;
+   protected int dangerLvl;
 
    //private static int animalBoidIdReference = 0;
-   private int animalBoidId;
+   protected int animalBoidId;
 
    public int getAnimalBoidId(){
       return animalBoidId;
@@ -63,12 +64,24 @@ public abstract class Animal : Species, AnimalManager{
       this.state = state;
    }
 
+   public int getDangerLvl(){
+      return dangerLvl;
+   }
+
+   public void increaseDangerLvl(int nbLvl){
+      this.dangerLvl = dangerLvl + nbLvl;
+   }
+
+   public void resetDangerLvl(){
+      this.dangerLvl = 0;
+   }
+
    public abstract void groupBehaviour();
    public abstract void familyBehaviour();
    public abstract void stateBehaviour();
-   public abstract int dangerEvaluation(Species species);
+   public abstract void dangerEvaluation(Species species);
    public abstract void kill(Species species);
-   public abstract bool runAway();
+   public abstract bool runAway(Animal animal);
    public abstract void other();
 
 

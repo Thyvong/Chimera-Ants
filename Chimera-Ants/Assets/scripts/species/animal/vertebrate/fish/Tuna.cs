@@ -7,7 +7,7 @@ public class Tuna : Fish{
     	Tuna tuna = new Tuna();
     	return tuna;
     }
-    public override void feed(Species species){}
+    public void feed(Species species){}
     public override void drink(){}
     public override void death(){}
 	// Animal method
@@ -16,11 +16,11 @@ public class Tuna : Fish{
    	public override void stateBehaviour(){
    		//return State.Leader;
    	}
-	public override int dangerEvaluation(Species species){
-		return 0;
+	public override void dangerEvaluation(Species species){
+		//return 0;
 	}
    	public override void kill(Species species){}
-   	public override bool runAway(){
+   	public override bool runAway(Animal animal){
    		return false;
    	}
    	public override void other(){}
