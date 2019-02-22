@@ -128,7 +128,7 @@ public class MapsGenerator: MonoBehaviour
     public void GenerateRocks(float[,] heightmap, Mesh mesh)
     {
         System.Random rng = new System.Random();
-        int nbRocks = rng.Next();
+        int nbRocks = rng.Next() % 50;
 
         int plainIndex = 0;
         for (int it = 0; it < biomes.Length; it++)
@@ -154,24 +154,44 @@ public class MapsGenerator: MonoBehaviour
             do
             {
                 index = rng.Next() % mesh.vertexCount;
+
             } while (
                 (heightmap[index / width, index % width] > biomes[plainIndex].height
-                || heightmap[index / width, index % width] < biomes[plainIndex--].height)
+                || heightmap[index / width, index % width] < biomes[plainIndex-1].height)
                 ||
                 treesLocationIndex.Contains(index)
                 || rocksLocationIndex.Contains(index)
             );
             // save pos as an index in an array. Don't forget to check if pos is not already occupied
             rocksLocationIndex.Add(index);
-            Instantiate(rockModel, mesh.vertices[index], Quaternion.FromToRotation(Vector3.up, mesh.tangents[index]), rockList);
+            GameObject rock = Instantiate(rockModel, 50*mesh.vertices[index], Quaternion.FromToRotation(Vector3.up, mesh.normals[index]));
+            float scalemultiply = (rng.Next() % 100.0f) * mesh.vertices[index].y;
+            rock.transform.localScale = (scalemultiply!=0)?rock.transform.localScale * scalemultiply : rock.transform.localScale;
+            rock.transform.parent = rockList;
         }
 
 
     }
+    public void GenerateTreePatch(Vector3 pos, Quaternion rotation, float radius, float density)
+    {
+        System.Random rng = new System.Random();
+        
+        int nbTrees =  (int)(20.0 * density);
+        for(int i=0; i< nbTrees; ++i)
+        {
+            GameObject tree = Instantiate(treeModel, 50 * (pos + new Vector3( (rng.Next(-200,200))/1000.0f, 0, (rng.Next(-200, 200)) / 1000.0f) ), rotation); // *50 pour correspondre au scale du terrain
+            //float scalemultiply = (rng.Next() % 2.0f) * pos.y;
+            float scalemultiply =1;
+            print(tree.transform.position + " " + pos.y + " " + pos.y *50);
+            tree.transform.localScale = (scalemultiply != 0) ? tree.transform.localScale * scalemultiply : tree.transform.localScale;
+            tree.transform.parent = treeList;
+        }
+        
+    }
     public void GenerateVegetation(float[,] heightmap, Mesh mesh)
     {
         System.Random rng = new System.Random();
-        int nbTrees = rng.Next();
+        int nbTrees = rng.Next() % 100;
 
         int plainIndex=0;
         for(int it = 0; it < biomes.Length; it++)
@@ -199,15 +219,17 @@ public class MapsGenerator: MonoBehaviour
                 index = rng.Next() % mesh.vertexCount;
             } while (
                 (heightmap[index / width, index % width] > biomes[plainIndex].height
-                || heightmap[index / width, index % width] < biomes[plainIndex--].height)
+                || heightmap[index / width, index % width] < biomes[plainIndex-1].height)
                 ||
                 treesLocationIndex.Contains(index)
                 ||rocksLocationIndex.Contains(index)
             );
             // save pos as an index in an array. Don't forget to check if pos is not already occupied
             treesLocationIndex.Add(index);
-            Instantiate(treeModel, mesh.vertices[index], Quaternion.FromToRotation(Vector3.up, mesh.tangents[index]), treeList);
+            GenerateTreePatch(mesh.vertices[index], Quaternion.FromToRotation(Vector3.forward, mesh.normals[index]), 2.0f, 0.8f);
         }
+
+
         
     }
 
@@ -219,6 +241,8 @@ public class MapsGenerator: MonoBehaviour
         _texture = maprenderer.generateTexture(_colorMap, width, height);
         _mesh = generateMesh(_heightMap);
 
+        GenerateRocks(_heightMap, _mesh);
+        GenerateVegetation(_heightMap, _mesh);
         maprenderer.renderMesh(_mesh, _texture);
         maprenderer.meshfilter.gameObject.GetComponent<MeshCollider>().sharedMesh = _mesh;
     }
