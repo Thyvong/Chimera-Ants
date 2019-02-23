@@ -2,7 +2,7 @@
 
 public class Gorilla : Primate{
     // Species method
-	public override void developpement(){}
+	private void developpement(){}
     public override Species reproduction(Species species){
     	Gorilla gorilla = new Gorilla();
     	return gorilla;

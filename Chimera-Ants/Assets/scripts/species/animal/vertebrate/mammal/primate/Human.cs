@@ -3,7 +3,7 @@
 
 public class Human : Primate, HumanManager{
     // Species method
-	public override void developpement(){}
+	private void developpement(){}
     public override Species reproduction(Species species){
     	Human man = new Human();
     	return man;

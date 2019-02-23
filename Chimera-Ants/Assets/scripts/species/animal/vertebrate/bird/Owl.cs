@@ -2,7 +2,7 @@
 
 public class Owl : Bird{
     // Species method
-	public override void developpement(){}
+	private void developpement(){}
     public override Species reproduction(Species species){
     	Owl owl = new Owl();
     	return owl;

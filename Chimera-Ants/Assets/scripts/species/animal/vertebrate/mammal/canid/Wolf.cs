@@ -2,7 +2,7 @@
 
 public class Wolf : Canid{
     // Species method
-	public override void developpement(){}
+	private void developpement(){}
     public override Species reproduction(Species species){
     	Wolf wolf = new Wolf();
     	return wolf;

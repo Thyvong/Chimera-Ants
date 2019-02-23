@@ -2,7 +2,7 @@
 
 public class Lizard : Reptile{
     // Species method
-	public override void developpement(){}
+	private void developpement(){}
     public override Species reproduction(Species species){
     	Lizard lizard = new Lizard();
     	return lizard;

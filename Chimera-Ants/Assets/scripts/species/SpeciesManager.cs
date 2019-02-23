@@ -10,4 +10,5 @@ interface SpeciesManager{
     void drink();
 
     void death();
+
 }

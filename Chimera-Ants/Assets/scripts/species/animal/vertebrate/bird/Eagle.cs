@@ -3,7 +3,7 @@
 public class Eagle : Bird{
 
 	// Species method
-	public override void developpement(){}
+	private void developpement(){}
     public override Species reproduction(Species species){
     	Eagle eagle = new Eagle();
     	return eagle;

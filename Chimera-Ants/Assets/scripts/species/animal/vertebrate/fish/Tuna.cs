@@ -2,7 +2,7 @@
 
 public class Tuna : Fish{
     // Species method
-	public override void developpement(){}
+	private void developpement(){}
     public override Species reproduction(Species species){
     	Tuna tuna = new Tuna();
     	return tuna;

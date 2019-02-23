@@ -3,7 +3,7 @@
 
 public class Chimpanzee : Primate{
     // Species method
-	public override void developpement(){}
+	private void developpement(){}
     public override Species reproduction(Species species){
     	Chimpanzee monkey = new Chimpanzee();
     	return monkey;

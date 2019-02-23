@@ -3,7 +3,7 @@
 
 public class Crocodile : Reptile{
     // Species method
-	public override void developpement(){}
+	private void developpement(){}
     public override Species reproduction(Species species){
     	Crocodile croco = new Crocodile();
     	return croco;

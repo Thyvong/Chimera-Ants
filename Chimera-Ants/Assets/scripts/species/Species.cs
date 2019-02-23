@@ -2,7 +2,7 @@
 
 public abstract class Species : Element, SpeciesManager{
     
-    protected int longevity; //A species life expenctancy 
+    protected float longevity; //A species life expenctancy 
     protected float weight; 
     protected float strength; //the strength value of a spieces
     protected float lifePoint; //Life point -> if lifePoint = 0 -> death
@@ -12,23 +12,43 @@ public abstract class Species : Element, SpeciesManager{
 
     protected LifeStyle lifeStyle; //Species lifestyle
 
+    protected float feedInspector = 0f;//time indicator which mesure the time spent without eating
+
+
     //private static int speciesBoidIdReference = 0;
     //protected int spiecesBoidId;
 
+    protected Species(){
+        longevity = 5000;
+        lifePoint = 100;
+        baseLifePoint = 100;
+    }
+
+    protected Species detection(){
+        //si le game object d'une espece se trouve dans le champs de detection d'une fourmi (=15 cm)
+            //retourner l'espece (= en recupérant son game object et le type de son component)
+
+        //retourner null
+        return null;
+
+    }
+
     //public abstract void deplacement();
-    public abstract void developpement();
     public abstract Species reproduction(Species species);
     
     public abstract void drink();
-    
 
     protected void feed(Species species){
-        restoreLifePoint();
-        species.death();
+        if(lifePoint <= baseLifePoint-10){
+            restoreLifePoint();
+            species.death();
+        }
+        
     }
 
     protected void restoreLifePoint(){
         setLifePoint(baseLifePoint);
+        feedInspector = 0f;
     }
 
     protected void deplacement(float x, float y, float z){
@@ -36,11 +56,13 @@ public abstract class Species : Element, SpeciesManager{
     }
 
     public void death(){
-        if(lifePoint <= 0){
+        if(lifePoint <= 0 || longevity <= 0 || baseLifePoint <= 20){
+            print("death");
+            //Destroy(this.model);
             Destroy(this);
 		} 
     }
-    public int getLongevity(){
+    public float getLongevity(){
         return longevity;
     }
 
@@ -67,6 +89,31 @@ public abstract class Species : Element, SpeciesManager{
 
     public LifeStyle getLifeStyle(){
         return lifeStyle;
+    }
+
+    public void developpement(){
+        death();
+
+        feedInspector ++;
+
+        //if the species didn't eat for too long
+		if(feedInspector >= 500f){
+            //it weakens
+			lifePoint --;
+			baseLifePoint --;
+            resistance -= 0.1f;
+		}
+
+        //if the spieces eats regulary
+		if(feedInspector <= 0.00000000001f){
+            //it grows well
+			baseLifePoint += 0.1f;
+            resistance += 1f;
+		}
+
+        print("base life point " + baseLifePoint);
+        print("life point " + lifePoint);
+        print("feedInspector " + feedInspector);
     }
 
     //protected setSpiecesBoidReference    

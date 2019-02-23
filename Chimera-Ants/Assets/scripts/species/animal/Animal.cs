@@ -16,6 +16,8 @@ public abstract class Animal : Species, AnimalManager{
 
    //private static int animalBoidIdReference = 0;
    protected int animalBoidId;
+   protected static int familyBoidIdReference = 0;
+   protected int familyBoidId;
 
    public int getAnimalBoidId(){
       return animalBoidId;
