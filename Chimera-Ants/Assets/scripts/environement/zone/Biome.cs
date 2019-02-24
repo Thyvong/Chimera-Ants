@@ -5,7 +5,7 @@ public enum TerritoryType { NONE, FORET, PLAINE, STEPPES, MONTAGNES, TOUNDRA, DE
 [System.Serializable]
 public class Biome
 {
-    private TerritoryType zoneType;
+    public TerritoryType zoneType;
     private int moisture;
     private float temperature;
     public float height;
