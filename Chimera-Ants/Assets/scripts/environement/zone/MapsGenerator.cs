@@ -165,24 +165,23 @@ public class MapsGenerator: MonoBehaviour
             // save pos as an index in an array. Don't forget to check if pos is not already occupied
             rocksLocationIndex.Add(index);
             GameObject rock = Instantiate(rockModel, 50*mesh.vertices[index], Quaternion.FromToRotation(Vector3.up, mesh.normals[index]));
-            float scalemultiply = (rng.Next() % 100.0f) * mesh.vertices[index].y;
+            float scalemultiply = (rng.Next() % 10.0f) * mesh.vertices[index].y;
             rock.transform.localScale = (scalemultiply!=0)?rock.transform.localScale * scalemultiply : rock.transform.localScale;
             rock.transform.parent = rockList;
         }
 
 
     }
-    public void GenerateTreePatch(Vector3 pos, Quaternion rotation, float radius, float density)
+    public void GenerateTreePatch(Vector3 pos, Quaternion rotation, int radius, float density)
     {
         System.Random rng = new System.Random();
         
         int nbTrees =  (int)(20.0 * density);
         for(int i=0; i< nbTrees; ++i)
         {
-            GameObject tree = Instantiate(treeModel, 50 * (pos + new Vector3( (rng.Next(-200,200))/1000.0f, 0, (rng.Next(-200, 200)) / 1000.0f) ), rotation); // *50 pour correspondre au scale du terrain
+            GameObject tree = Instantiate(treeModel, 50 * (pos + new Vector3( (rng.Next(-radius, radius))/1000.0f, 0, (rng.Next(-radius, radius)) / 1000.0f) ), rotation); // *50 pour correspondre au scale du terrain
             //float scalemultiply = (rng.Next() % 2.0f) * pos.y;
             float scalemultiply =1;
-            print(tree.transform.position + " " + pos.y + " " + pos.y *50);
             tree.transform.localScale = (scalemultiply != 0) ? tree.transform.localScale * scalemultiply : tree.transform.localScale;
             tree.transform.parent = treeList;
         }
@@ -191,7 +190,7 @@ public class MapsGenerator: MonoBehaviour
     public void GenerateVegetation(float[,] heightmap, Mesh mesh)
     {
         System.Random rng = new System.Random();
-        int nbTrees = rng.Next() % 100;
+        int nbTrees = rng.Next() % 20;
 
         int plainIndex=0;
         for(int it = 0; it < biomes.Length; it++)
@@ -217,16 +216,17 @@ public class MapsGenerator: MonoBehaviour
             do
             {
                 index = rng.Next() % mesh.vertexCount;
+                // adding + 0.01 prevent tree spawn too close to extreme slope part like water or mounts, whick looks weird
             } while (
-                (heightmap[index / width, index % width] > biomes[plainIndex].height
-                || heightmap[index / width, index % width] < biomes[plainIndex-1].height)
+                (heightmap[index / width, index % width] > biomes[plainIndex].height - 0.03f
+                || heightmap[index / width, index % width] < biomes[plainIndex-1].height + 0.08f)
                 ||
                 treesLocationIndex.Contains(index)
                 ||rocksLocationIndex.Contains(index)
             );
             // save pos as an index in an array. Don't forget to check if pos is not already occupied
             treesLocationIndex.Add(index);
-            GenerateTreePatch(mesh.vertices[index], Quaternion.FromToRotation(Vector3.forward, mesh.normals[index]), 2.0f, 0.8f);
+            GenerateTreePatch(mesh.vertices[index], Quaternion.FromToRotation(Vector3.forward, mesh.normals[index]), 400, 2.0f);
         }
 
 
