@@ -592,7 +592,7 @@ GameObject:
   - component: {fileID: 95434560768396572}
   - component: {fileID: 114569717884304342}
   m_Layer: 0
-  m_Name: ChimeraAnt
+  m_Name: AntWorker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
