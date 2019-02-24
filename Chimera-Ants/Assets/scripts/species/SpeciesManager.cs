@@ -1,14 +1,14 @@
 ﻿//This interface manages Species class
 
 interface SpeciesManager{
-    void developpement();
+    void Developpement();
 
-    Species reproduction(Species species);
+    Species Reproduction(Species species);
 
     //void feed(Species species);
 
-    void drink();
+    void Drink();
 
-    void death();
+    void Death();
 
 }

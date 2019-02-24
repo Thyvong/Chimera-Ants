@@ -4,12 +4,12 @@
 public class Chimpanzee : Primate{
     // Species method
 	private void developpement(){}
-    public override Species reproduction(Species species){
+    public override Species Reproduction(Species species){
     	Chimpanzee monkey = new Chimpanzee();
     	return monkey;
     }
     public void feed(Species species){}
-    public override void drink(){}
+    public override void Drink(){}
     public void death(){}
 	// Animal method
     public override void groupBehaviour(){}

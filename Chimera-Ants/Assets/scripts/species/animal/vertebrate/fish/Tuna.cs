@@ -3,12 +3,12 @@
 public class Tuna : Fish{
     // Species method
 	private void developpement(){}
-    public override Species reproduction(Species species){
+    public override Species Reproduction(Species species){
     	Tuna tuna = new Tuna();
     	return tuna;
     }
     public void feed(Species species){}
-    public override void drink(){}
+    public override void Drink(){}
     public void death(){}
 	// Animal method
     public override void groupBehaviour(){}

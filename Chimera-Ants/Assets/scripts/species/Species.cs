@@ -1,19 +1,21 @@
 ﻿// This class represent all kind of living species animals, vegetals, bacterium, mushroom
 
+using UnityEngine;
+
 public abstract class Species : Element, SpeciesManager{
     
     protected float longevity; //A species life expenctancy 
-    protected float weight; 
+    protected float weight;
     protected float strength; //the strength value of a spieces
     protected float lifePoint; //Life point -> if lifePoint = 0 -> death
-
     protected float baseLifePoint;
     protected float resistance; //value between 0 and 1 more the value is high more the spieces is resistant
 
     protected LifeStyle lifeStyle; //Species lifestyle
 
-    protected float feedInspector = 0f;//time indicator which mesure the time spent without eating
+    protected int hunger = 0;//time indicator which mesure the time spent without eating
 
+    protected float visionRange = 5f;
 
     //private static int speciesBoidIdReference = 0;
     //protected int spiecesBoidId;
@@ -23,39 +25,43 @@ public abstract class Species : Element, SpeciesManager{
         lifePoint = 100;
         baseLifePoint = 100;
     }
-
-    protected Species detection(){
-        //si le game object d'une espece se trouve dans le champs de detection d'une fourmi (=15 cm)
-            //retourner l'espece (= en recupérant son game object et le type de son component)
-
-        //retourner null
-        return null;
+    
+    /*
+    protected bool Detection(Species species){
+        print("Detection " + GetType().ToString() + " vs " + species.GetType().ToString());
+        if (GetType().ToString() == species.GetType().ToString())
+        {
+            print("Detection true");
+            return true;
+        }
+            
+        return false;
 
     }
-
+    */
     //public abstract void deplacement();
-    public abstract Species reproduction(Species species);
+    public abstract Species Reproduction(Species species);
     
-    public abstract void drink();
+    public abstract void Drink();
 
-    protected void feed(Species species){
+    protected void Feed(Species species){
         if(lifePoint <= baseLifePoint-10){
-            restoreLifePoint();
-            species.death();
+            RestoreLifePoints();
+            species.Death();
         }
         
     }
 
-    protected void restoreLifePoint(){
-        setLifePoint(baseLifePoint);
-        feedInspector = 0f;
+    protected void RestoreLifePoints(){
+        SetLifePoints(baseLifePoint);
+        hunger = 0;
     }
 
-    protected void deplacement(float x, float y, float z){
+    protected void Deplacement(float x, float y, float z){
         this.transform.Translate(x,y,z);
     }
 
-    public void death(){
+    public void Death(){
         if(lifePoint <= 0 || longevity <= 0 || baseLifePoint <= 20){
             print("death");
             //Destroy(this.model);
@@ -78,7 +84,7 @@ public abstract class Species : Element, SpeciesManager{
         return lifePoint;
     }
 
-    public void setLifePoint(float lifePoint){
+    public void SetLifePoints(float lifePoint){
         this.lifePoint = lifePoint;
     }
 
@@ -91,13 +97,13 @@ public abstract class Species : Element, SpeciesManager{
         return lifeStyle;
     }
 
-    public void developpement(){
-        death();
+    public void Developpement(){
+        Death();
 
-        feedInspector ++;
+        hunger ++;
 
         //if the species didn't eat for too long
-		if(feedInspector >= 500f){
+		if(hunger >= 500){
             //it weakens
 			lifePoint --;
 			baseLifePoint --;
@@ -105,7 +111,7 @@ public abstract class Species : Element, SpeciesManager{
 		}
 
         //if the spieces eats regulary
-		if(feedInspector <= 0.00000000001f){
+		if(hunger <= 10){
             //it grows well
 			baseLifePoint += 0.1f;
             resistance += 1f;
@@ -113,7 +119,7 @@ public abstract class Species : Element, SpeciesManager{
 
         print("base life point " + baseLifePoint);
         print("life point " + lifePoint);
-        print("feedInspector " + feedInspector);
+        print("hunger " + hunger);
     }
 
     //protected setSpiecesBoidReference    

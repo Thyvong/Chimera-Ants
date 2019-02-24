@@ -7,69 +7,24 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
     public ChimeraAntClass status;
     private Species[] speciesGenomes;
 	
-	private static int familyBoidIdReference = 0;
+	private new static int familyBoidIdReference = 0;
     
 
 	//Constructor
-
-	private ChimeraAnt() : base()
+	private void Start()
 	{
-		
-		this.setAnimalBoidId(0);
-
-		this.status = status;
-
-		this.familyBoidId = familyBoidIdReference;
-		familyBoidIdReference++;
-
-		this.sex = Sex.Female;
-
+        System.Random random = new System.Random();
+        if (random.Next() % 2 == 0)
+        {
+            sex = Sex.Male;
+        }
+        else
+        {
+            sex = Sex.Female;
+        }
+        setAnimalBoidId(0);
 		resistance = 1000;
-
-		longevity = 5000f * 15f;
-
-		
-	}
-
-	private ChimeraAnt(ChimeraAntClass status, int familyBoidId, Sex sex) : base()
-	{
-		
-		this.setAnimalBoidId(0);
-
-		this.status = status;
-
-		if(this.status == ChimeraAntClass.Queen){
-			//Resources.Load("Prefabs/AntQueen.prefab");
-			//Charge le prefab de reine
-		}
-
-		if(this.status == ChimeraAntClass.King){
-			//Resources.Load("Prefabs/AntKing.prefab");
-			//Charge le prefab de roi
-		}
-
-		if(this.status == ChimeraAntClass.KingGuard){
-			//Resources.Load("Prefabs/AntKingGuard.prefab");
-			//Charge le prefab de garde royal
-		}
-
-		if(this.status == ChimeraAntClass.Soldier){
-			//Resources.Load("Prefabs/AntSoldier.prefab");
-			//Charge le prefab de soldat
-		}
-
-		if(this.status == ChimeraAntClass.Worker){
-			//Resources.Load("Prefabs/AntWorker.prefab");
-			//Charge le prefab de ouvrier
-		}
-
-		this.familyBoidId = familyBoidId;
-
-		this.sex = sex;
-
-		resistance = 1000;
-
-		longevity = longevity * 15f;	
+		longevity = longevity * 15f;
 	}
 
     
@@ -77,43 +32,46 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 
 	//A faire remonter dans Species
 	public void deplacement(float x, float z){
-		base.deplacement(x,0,z);
+		base.Deplacement(x,0,z);
 	}
 
-	private void developpement(){
-		base.developpement();
-		
+    private void SpawnChildren()
+    {
+        //1st part of queen's life
+        if (longevity >= 4000)
+        {
+            Instantiate(Resources.Load("Prefab/AntWorker.prefab"),transform.position,new Quaternion());
+
+        }
+        else
+        {
+            //2nd part of queen's life
+            if (longevity >= 3000)
+            {
+                Instantiate(Resources.Load("Prefab/AntKingGuard.prefab"), transform.position, new Quaternion());
+
+            }
+            else
+            {
+                //last part of queen's life
+                if (longevity >= 2000)
+                {
+                    Instantiate(Resources.Load("Prefab/AntKing.prefab"), transform.position, new Quaternion());
+
+                }
+            }
+        }
+    }
+
+	private new void Developpement(){
+		base.Developpement();
 		//longevity equivalent of 15 years
 		longevity --;
-
-		Species species = detection();
-
-		//1st part of queen's life
-		if(longevity >= 4000){
-			if(species.GetType() == typeof(ChimeraAnt)){
-				reproduction( (ChimeraAnt) species );
-			}
-		}
-
-		//2nd part of queen's life
-		if(longevity >= 3000){
-			if(species.GetType() == typeof(ChimeraAnt)){
-				KingGuardBirth( (ChimeraAnt) species );
-			}
-		}
-
-		//last part of queen's life
-		if(longevity >= 2000){
-			if(species.GetType() == typeof(ChimeraAnt)){
-				KingBirth( (ChimeraAnt) species );
-			}
-		}
-
 
 	}
 
 	//Fait
-    public override Species reproduction(Species species){
+    public override Species Reproduction(Species species){
 		int rand = -1;
 		print("Appel");
 		if(species.GetType() == typeof(ChimeraAnt)){
@@ -149,8 +107,7 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 				else{
 					status = ChimeraAntClass.Soldier;
 				}
-
-				return new ChimeraAnt(status, familyBoidId, sex);
+                
 			}
 		}
 		return null;
@@ -212,12 +169,12 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 	//Fait
 	public void feed(Species species){
 		if(species.GetType() == typeof(Animal) || species.GetType() == typeof(Vegetal)){
-			base.feed(species);
+			base.Feed(species);
 		}
 	}
 	
 	//A faire remonter dans Spieces
-    public override void drink(){}
+    public override void Drink(){}
 
 	
 	// Animal method
@@ -263,9 +220,9 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 	public override void kill(Species species){
 		
 		while(species.getLifePoint() > 0){
-			species.setLifePoint( species.getLifePoint() - (getStrenght() * getWeight()) / ( species.getResistance() * species.getWeight() ) );
+			species.SetLifePoints( species.getLifePoint() - (getStrenght() * getWeight()) / ( species.getResistance() * species.getWeight() ) );
 
-			species.death();
+			species.Death();
 			
 		}
 	}
@@ -301,54 +258,10 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
     //Chimera-ants special method
     public void geneticalEvolution(){}
 
-	public void Start(){ 
-		print("longevity " + longevity);
-		print("lifePoint " + lifePoint);
-		print("baseLifePoint " + baseLifePoint);
-
-		//ChimeraAnt cAnt = new ChimeraAnt();
-		//cAnt.status = ChimeraAntClass.King;
-
-		if(status == ChimeraAntClass.Queen){
-			GameObject king = GameObject.Find("AntKing");
-
-			if(!king.GetComponent<Species>()){
-				print("c'est nul");
-			}
-			else{
-				print("c'est pas nul");
-				ChimeraAnt cAntChild = (ChimeraAnt)reproduction(king.GetComponent<Species>());
-
-				if(cAntChild != null){
-					print("c'est pas null");
-					cAntChild.deplacement(10,0,0);
-				}
-				else{
-					print("null");
-				}
-					
-			}
-			
-		}
-		
-
-	}
 
 	public void Update(){
 		
-		/*/longevity--;
-		print("longevity = " + longevity);
-		death();*/
-
-		//developpement();
-
-		if(longevity % 500 == 0){
-			//reproduction(cAnt);
-		}
-
-		/* if(model.gameObject.tag == "AntKing"){
-
-		}*/
+		
 
 	}
 }
