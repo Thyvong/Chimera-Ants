@@ -17,25 +17,23 @@ public abstract class Species : Element, SpeciesManager{
 
     public float visionRange { get; protected set; }
 
-    Rigidbody _rb;
+    protected Rigidbody _rb;
 
 
     //private static int speciesBoidIdReference = 0;
     //protected int spiecesBoidId;
     private void Awake()
     {
-        // universel (i guess ?)
-        _rb = new Rigidbody
-        {
-            constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ,
-            mass = weight,
-            drag = 5,
-            angularDrag = weight / 10.0f,
-            isKinematic = false,
-            useGravity = true,
-            interpolation = RigidbodyInterpolation.Interpolate,
-            collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic
-        };
+        _rb = gameObject.AddComponent<Rigidbody>();
+        _rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+        _rb.mass = weight;
+        _rb.drag = 5;
+        _rb.angularDrag = weight / 10.0f;
+        _rb.isKinematic = false;
+        _rb.useGravity = true;
+        _rb.interpolation = RigidbodyInterpolation.Interpolate;
+        _rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        
     }
     protected Species(){
 

@@ -42,8 +42,8 @@ public abstract class Animal : Species, AnimalManager{
 			}
         }
     }
-
-    public void increaseDangerLvl(int nbLvl){
+    // Increase danger level by nblvl
+    protected void increaseDangerLvl(int nbLvl){
         dangerLvl = dangerLvl + nbLvl;
     }
 

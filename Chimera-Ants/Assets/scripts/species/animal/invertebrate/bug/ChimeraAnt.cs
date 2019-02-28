@@ -61,24 +61,24 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
             }
             else
             {
-                //First part of Queen's life : Give birth to the colony
-                if (longevity <= 4000 || _isKingBorn)
+                // First and default part of Queen's life : Give birth to the colony
+                
+                System.Random random = new System.Random();
+                    
+                if (random.Next() % 2 == 0)
                 {
-                    System.Random random = new System.Random();
-                    
-                    if (random.Next() % 2 == 0)
-                    {
-                        source += "AntWorker";
-                    }
-                    else
-                    {
-                        source += "AntSoldier";
-                    }
-                    
+                    source += "AntWorker";
                 }
+                else
+                {
+                    source += "AntSoldier";
+                }
+                    
+                
             }
         }
-        ChimeraAnt go = (ChimeraAnt)Instantiate(Resources.Load(source), transform.position - transform.forward, new Quaternion());
+        print("Instatiating " + source);
+        ChimeraAnt go =( (GameObject)Instantiate(Resources.Load(source), transform.position - transform.forward, new Quaternion())).GetComponent< ChimeraAnt>();
         return go;
     }
 
@@ -173,11 +173,11 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 
    	public override void stateBehaviour(){
 		if(this.status == ChimeraAntClass.Queen || this.status == ChimeraAntClass.King){
-			this.setState(State.Leader);
+			state = State.Leader;
 			//print("Leader");
 		}
 		else{
-			this.setState(State.Follower);
+			state  = State.Follower;
 			//print("Follower");
 		}
    	}
@@ -220,19 +220,20 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 	}*/
 
 	//A faire dans Animal
+    // Qui runaway ? la chimera ant ou l'animal ?
 	public override bool RunAway(Animal animal){
 
 		if(dangerLvl >= 3){
-			int rand = -1;
+            // ca rpz quoi ?
 			System.Random random = new System.Random();
-			rand = random.Next(0,10);
+            int rand = random.Next(0,10);
 
-			if(animal.getDangerLvl() > 3){
-				rand -= random.Next(1,animal.getDangerLvl());
+			if(animal.dangerLvl > 3){
+				rand -= random.Next(1,animal.dangerLvl);
 			}
 
-			if(animal.getDangerLvl() <= 3){
-				rand += random.Next(1,animal.getDangerLvl());
+			if(animal.dangerLvl <= 3){
+				rand += random.Next(1,animal.dangerLvl);
 			}
 
 			if(rand >= 5){
