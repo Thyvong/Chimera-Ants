@@ -19,8 +19,8 @@ public class Wolf : Canid{
 	public void dangerEvaluation(Species species){
 		//return 0;
 	}
-   	public override void kill(Species species){}
-   	public override bool runAway(Animal animal){
+   	public override void Attack(Species species){}
+   	public override bool RunAway(Animal animal){
    		return false;
    	}
    	public override void other(){}

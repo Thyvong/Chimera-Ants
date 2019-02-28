@@ -276,6 +276,8 @@ GameObject:
   - component: {fileID: 4912965475226962}
   - component: {fileID: 95116653736119056}
   - component: {fileID: 114009757288599970}
+  - component: {fileID: 54925346074668588}
+  - component: {fileID: 65857946794853976}
   m_Layer: 0
   m_Name: AntSoldier
   m_TagString: Untagged
@@ -1551,6 +1553,33 @@ Transform:
   m_Father: {fileID: 4255933415320624}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &54925346074668588
+Rigidbody:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1407677402357476}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 10
+  m_AngularDrag: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 80
+  m_CollisionDetection: 2
+--- !u!65 &65857946794853976
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1407677402357476}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.59558105, y: 0.77, z: 1.6250229}
+  m_Center: {x: -0.042907715, y: 0.3, z: -0.23897934}
 --- !u!95 &95116653736119056
 Animator:
   serializedVersion: 3

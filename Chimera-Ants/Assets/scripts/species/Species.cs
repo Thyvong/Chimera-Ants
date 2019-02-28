@@ -4,104 +4,86 @@ using UnityEngine;
 
 public abstract class Species : Element, SpeciesManager{
     
-    protected float longevity; //A species life expenctancy 
-    protected float weight;
-    protected float strength; //the strength value of a spieces
-    protected float lifePoint; //Life point -> if lifePoint = 0 -> death
-    protected float baseLifePoint;
-    protected float resistance; //value between 0 and 1 more the value is high more the spieces is resistant
+    public float longevity{  get;  protected set;} //A species life expenctancy 
+    public float weight { get; protected set; }
+    public float strength { get; protected set; } //the strength value of a spieces
+    public float lifePoint { get; protected set; } //Life point -> if lifePoint = 0 -> death
+    public float baseLifePoint { get; protected set; }
+    public float resistance { get; protected set; } //value between 0 and 1 more the value is high more the spieces is resistant
+    public float speed { get; protected set; }
+    public LifeStyle lifeStyle { get; protected set; } //Species lifestyle
 
-    protected LifeStyle lifeStyle; //Species lifestyle
+    public int hunger { get; protected set; } //time indicator which mesure the time spent without eating
 
-    protected int hunger = 0;//time indicator which mesure the time spent without eating
+    public float visionRange { get; protected set; }
 
-    protected float visionRange = 5f;
+    Rigidbody _rb;
+
 
     //private static int speciesBoidIdReference = 0;
     //protected int spiecesBoidId;
-
+    private void Awake()
+    {
+        // universel (i guess ?)
+        _rb = new Rigidbody
+        {
+            constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ,
+            mass = weight,
+            drag = 5,
+            angularDrag = weight / 10.0f,
+            isKinematic = false,
+            useGravity = true,
+            interpolation = RigidbodyInterpolation.Interpolate,
+            collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic
+        };
+    }
     protected Species(){
+
+        // initialisé ici, mais dans le futur, fait cas par cas
         longevity = 5000;
+        strength = 1;
+        weight = 10;
         lifePoint = 100;
         baseLifePoint = 100;
+        resistance = 1;
+        lifeStyle = LifeStyle.Settled;
+        speed = 1;
+        hunger = 0;
+        visionRange = 5f;
     }
     
-    /*
-    protected bool Detection(Species species){
-        print("Detection " + GetType().ToString() + " vs " + species.GetType().ToString());
-        if (GetType().ToString() == species.GetType().ToString())
-        {
-            print("Detection true");
-            return true;
-        }
-            
-        return false;
-
-    }
-    */
-    //public abstract void deplacement();
     public abstract Species Reproduction(Species species);
-    
-    public abstract void Drink();
 
-    protected void Feed(Species species){
+    public virtual void Drink(){}
+
+    public virtual void Feed(Species species){
         if(lifePoint <= baseLifePoint-10){
             RestoreLifePoints();
-            species.Death();
         }
-        
+        hunger = 0;
+        species.Death();
     }
 
     protected void RestoreLifePoints(){
-        SetLifePoints(baseLifePoint);
-        hunger = 0;
+        lifePoint=baseLifePoint;
+        
+    }
+    public float TakeDamage(float damage)
+    {
+        float totalDamage = damage / resistance * weight;
+        lifePoint -= totalDamage;
+        return totalDamage;
     }
 
-    protected void Deplacement(float x, float y, float z){
-        this.transform.Translate(x,y,z);
+    protected virtual void Deplacement(Vector3 direction){
+        transform.LookAt(transform.position + direction);
+        _rb.MovePosition(transform.position + transform.forward * speed * Time.deltaTime);
     }
-
-    public void Death(){
-        if(lifePoint <= 0 || longevity <= 0 || baseLifePoint <= 20){
-            print("death");
-            //Destroy(this.model);
-            Destroy(this);
-		} 
-    }
-    public float getLongevity(){
-        return longevity;
-    }
-
-    public float getWeight(){
-        return weight;
-    }
-
-    public float getStrenght(){
-        return strength;
-    }
-
-    public float getLifePoint(){
-        return lifePoint;
-    }
-
-    public void SetLifePoints(float lifePoint){
-        this.lifePoint = lifePoint;
-    }
-
     
-    public float getResistance(){
-        return resistance;
-    }
-
-    public LifeStyle getLifeStyle(){
-        return lifeStyle;
-    }
-
-    public void Developpement(){
+    public virtual void Developpement()
+    {
         Death();
-
         hunger ++;
-
         //if the species didn't eat for too long
 		if(hunger >= 500){
             //it weakens
@@ -122,6 +104,14 @@ public abstract class Species : Element, SpeciesManager{
         print("hunger " + hunger);
     }
 
+    protected void Death()
+    {
+        if (lifePoint <= 0 || longevity <= 0 || baseLifePoint <= 20)
+        {
+            print("death");
+            Destroy(gameObject);
+        }
+    }
     //protected setSpiecesBoidReference    
 
 }

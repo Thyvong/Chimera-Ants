@@ -6,9 +6,6 @@ interface SpeciesManager{
     Species Reproduction(Species species);
 
     //void feed(Species species);
-
-    void Drink();
-
-    void Death();
+    
 
 }
