@@ -21,6 +21,13 @@ public abstract class Species : Element, SpeciesManager{
 
     protected Movement move;
 
+    /* Wandering parameters */
+    private bool canmove ;
+    private float waittimer = 0;
+    private float walktimer = 0;
+    private float turntimer = 0;
+    private Vector3 randomRotation = Vector3.zero;
+    private Vector3 randomDirection = Vector3.zero;
 
     //private static int speciesBoidIdReference = 0;
     //protected int spiecesBoidId;
@@ -81,7 +88,62 @@ public abstract class Species : Element, SpeciesManager{
         transform.LookAt(transform.position + direction);
         _rb.MovePosition(transform.position + transform.forward * speed * Time.deltaTime);
     }
-    
+    public void Wander()
+    {
+        if (canMove)
+        {
+            WanderTurn();
+            WanderWalk();
+        }
+        else
+        {
+            WanderWait();
+        }
+        
+        
+
+    }
+    public virtual void WanderWalk()
+    {
+        if (walktimer > 0)
+        {
+            move.Apply(randomDirection);
+            walktimer -= Time.fixedDeltaTime;
+        }
+        else
+        {
+            walktimer = Random.Range(0, 10);
+            randomDirection = new Vector3(Random.Range(-1, 1), Random.Range(-1, 1), Random.Range(-1, 1));
+            canmove = false;
+        }
+    }
+    public virtual void WanderTurn()
+    {
+        if (turntimer > 0)
+        {
+            transform.Rotate(randomRotation);
+            turntimer -= Time.fixedDeltaTime;
+        }
+        else
+        {
+            turntimer = Random.Range(0, 10);
+            randomRotation = new Vector3(Random.Range(-1, 1), Random.Range(-1, 1), Random.Range(-1, 1));
+        }
+    }
+    public virtual void WanderWait()
+    {
+        if (waittimer > 0)
+        {
+
+            waittimer -= Time.fixedDeltaTime;
+        }
+        else
+        {
+            waittimer = Random.Range(0, 10);
+            canmove = true;
+        }
+    }
+
     public virtual void Developpement()
     {
         Death();

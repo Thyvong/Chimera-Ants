@@ -56,6 +56,7 @@ public abstract class Animal : Species, AnimalManager{
    public abstract void stateBehaviour();
    
    public abstract void Attack(Species species);
+    
    public abstract bool RunAway(Animal animal);
    public abstract void other();
 
