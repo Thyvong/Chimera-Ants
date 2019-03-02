@@ -15,8 +15,11 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
     private bool _isKingBorn = false;
 
     //Constructor
-    private void Start()
-	{
+    protected override void Awake()
+    {
+        base.Awake();
+    
+        print("CHIMERA ANT " + name + "has started");
         System.Random random = new System.Random();
         if (random.Next() % 2 == 0)
         {
@@ -30,6 +33,8 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 		resistance = 1000;
 		longevity = longevity * 15f;
         print(longevity);
+
+        move = new ChimeraAntMove(_rb);
 	}
 
     
@@ -37,8 +42,9 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 
 	//A faire remonter dans Species
 	protected override void Deplacement(Vector3 direction){
-		base.Deplacement(direction);
-	}
+        move.Apply(direction);
+        print(name + " Moving at " + move.speed);
+    }
 
     private ChimeraAnt SpawnChildren()
     {
@@ -79,6 +85,9 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
         }
         print("Instatiating " + source);
         ChimeraAnt go =( (GameObject)Instantiate(Resources.Load(source), transform.position - transform.forward, new Quaternion())).GetComponent< ChimeraAnt>();
+        print("Transmitting movement ");
+        ((ChimeraAntMove)move).InheritMovement((ChimeraAntMove)go.move); // transmitting queen's movement qualities to newborn
+        
         return go;
     }
 
@@ -253,8 +262,8 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
         {
             if (status == ChimeraAntClass.Queen)
                 SpawnChildren();
+            else
+                Deplacement(transform.forward);
         }
-        
-
-	}
+    }
 }

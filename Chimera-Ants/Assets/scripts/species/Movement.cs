@@ -6,11 +6,11 @@ using System.Linq;
 /* Base class for Movement Behaviour */
 public abstract class Movement
 {
-    public Vector3 direction { get; protected set; }
+    public Vector3 direction { get;  set; }
     public float speed { get; protected set; }
     public float maxSpeed { get; protected set; }
     public float acceleration { get; protected set; }
-    public float maxAcceleration { get; protected set; }
+    public float stepAcceleration { get; protected set; }
 
     public Dictionary<string,MovementBase> knownMode { get; protected set; }
     protected MovementBase currentMode;
@@ -23,13 +23,13 @@ public abstract class Movement
         speed = 0;
         acceleration = 0;
         maxSpeed = maxvitesse;
-        maxAcceleration = maxaccel;
+        stepAcceleration = maxaccel;
         _rb = rigidbody;
 
         knownMode = new Dictionary<string, MovementBase>();
         currentMode = null;
     }
-    public Movement(Rigidbody rigidbody) : this(rigidbody, new Vector3(0, 0, 0), 1, 1) { }
+    public Movement(Rigidbody rigidbody) : this(rigidbody, rigidbody.transform.forward, 1, 1) { }
 
     // le choix de mode à utiliser n'est pas la responsabilité de cette classe
     // " la species est le pilote, cette classe est la voiture "
@@ -39,9 +39,24 @@ public abstract class Movement
         return currentMode;
     }
 
-    public void Apply()
+    public void Apply(Vector3 dir)
     {
-        currentMode.Apply(_rb,direction, speed, acceleration);
+        direction = dir;
+        currentMode.Apply(_rb, dir, speed, acceleration);
+               
+        if (speed < maxSpeed)
+            speed += maxSpeed * acceleration;
+        else
+            speed = maxSpeed;
+        
+        if(acceleration < 1)
+            acceleration += stepAcceleration;
+        else
+            acceleration = 1;
+    }
+    public void Stop()
+    {
+        speed = acceleration = 0;
     }
 }
 
@@ -56,7 +71,7 @@ public class ChimeraAntMove : Movement
         knownMode.Add("Walk", new Walk());
         currentMode = knownMode["Walk"];
     }
-    public ChimeraAntMove(Rigidbody rigidbody) : this(rigidbody, new Vector3(0, 0, 0), 1, 0.5f) { }
+    public ChimeraAntMove(Rigidbody rigidbody) : this(rigidbody, rigidbody.transform.forward, 1, 0.02f) { }
 
 
     // Permet de gagner des mouvements et d'améliorer sa vitesse
@@ -71,9 +86,16 @@ public class ChimeraAntMove : Movement
         if (!knownMode.ContainsKey(name)) knownMode.Add(name, move.knownMode[name]);
 
         maxSpeed += 0.1f * move.maxSpeed;
-        maxAcceleration += 0.1f * move.maxAcceleration;
+        stepAcceleration += 0.1f * move.stepAcceleration;
     }
-
+    // only used by queen
+    public void InheritMovement(ChimeraAntMove target)
+    {
+        target.stepAcceleration = stepAcceleration;
+        target.maxSpeed = maxSpeed;
+        target.knownMode = knownMode;
+        target.currentMode = currentMode;
+    }
 }
 
 
@@ -87,7 +109,7 @@ public class RabbitMove : Movement
         knownMode.Add("Walk",new Walk());
         currentMode = knownMode["Walk"];
     }
-    public RabbitMove(Rigidbody rigidbody) : this(rigidbody, new Vector3(0, 0, 0), 5, 3) { }
+    public RabbitMove(Rigidbody rigidbody) : this(rigidbody, rigidbody.transform.forward, 1, 0.3f) { }
 
 }
 

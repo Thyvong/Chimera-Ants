@@ -19,10 +19,12 @@ public abstract class Species : Element, SpeciesManager{
 
     protected Rigidbody _rb;
 
+    protected Movement move;
+
 
     //private static int speciesBoidIdReference = 0;
     //protected int spiecesBoidId;
-    private void Awake()
+    protected virtual void Awake()
     {
         _rb = gameObject.AddComponent<Rigidbody>();
         _rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
@@ -34,6 +36,8 @@ public abstract class Species : Element, SpeciesManager{
         _rb.interpolation = RigidbodyInterpolation.Interpolate;
         _rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         
+        
+
     }
     protected Species(){
 
