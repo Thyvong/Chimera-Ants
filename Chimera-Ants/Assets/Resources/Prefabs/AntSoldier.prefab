@@ -578,8 +578,9 @@ GameObject:
   - component: {fileID: 95997729530577882}
   - component: {fileID: 65088996378164858}
   - component: {fileID: 114096716835763160}
+  - component: {fileID: 135005264763776830}
   m_Layer: 0
-  m_Name: Soldier
+  m_Name: AntSoldier
   m_TagString: AntSoldier
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -931,7 +932,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1735198587819066}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 682.45996, y: 8.17, z: 264.47}
+  m_LocalPosition: {x: 677.11676, y: 8.214294, z: 271.51993}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4095881997990128}
@@ -1593,7 +1594,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51039bb9a23bdf84785af4b7e48c3cab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  status: 1
+  status: 2
+--- !u!135 &135005264763776830
+SphereCollider:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1735198587819066}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 2
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!137 &137456441164709524
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

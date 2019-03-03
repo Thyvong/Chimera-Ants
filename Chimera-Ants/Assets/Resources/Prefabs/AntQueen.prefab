@@ -112,9 +112,10 @@ GameObject:
   - component: {fileID: 95347822039672068}
   - component: {fileID: 65633911978212808}
   - component: {fileID: 114686707356726102}
+  - component: {fileID: 135697871049955286}
   m_Layer: 0
-  m_Name: Queen
-  m_TagString: AntKing
+  m_Name: AntQueen
+  m_TagString: AntQueen
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1000,7 +1001,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1212764003806666}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 681.95, y: 8.32, z: 267.6197}
+  m_LocalPosition: {x: 675.8091, y: 8.2124815, z: 271.81152}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4189106158885794}
@@ -1593,7 +1594,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51039bb9a23bdf84785af4b7e48c3cab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  status: 1
+  status: 0
+--- !u!135 &135697871049955286
+SphereCollider:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1212764003806666}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 2
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!137 &137887835642768554
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

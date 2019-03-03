@@ -683,9 +683,10 @@ GameObject:
   - component: {fileID: 95505173660612190}
   - component: {fileID: 65668829544637988}
   - component: {fileID: 114934819505346878}
+  - component: {fileID: 135796945495546676}
   m_Layer: 0
   m_Name: AntKingGuard
-  m_TagString: AntKing
+  m_TagString: AntKingGuard
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1407,7 +1408,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1857534667754020}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 684.23, y: 8.32, z: 267.6197}
+  m_LocalPosition: {x: 679.1832, y: 8.221605, z: 270.82166}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4388638698733514}
@@ -1593,7 +1594,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51039bb9a23bdf84785af4b7e48c3cab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  status: 1
+  status: 4
+--- !u!135 &135796945495546676
+SphereCollider:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1857534667754020}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 2
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!137 &137327379313417180
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

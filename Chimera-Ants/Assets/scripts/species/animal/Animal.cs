@@ -70,6 +70,8 @@ public abstract class Animal : Species, AnimalManager{
             print("RunAway true"); 
             transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position*(-1f),0.1f ) ;
         }
+        transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position  -  other.GetComponent(typeof(Animal)).transform.forward,0.01f ) ;
+        print("Collision detecter enter");
 
 	}
 
@@ -78,7 +80,12 @@ public abstract class Animal : Species, AnimalManager{
         if( RunAway( (Animal) other.GetComponent(typeof(Animal)) ) == false ){
             print("RunAway false on s'approche"); 
             transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position  -  other.GetComponent(typeof(Animal)).transform.forward,0.01f ) ;
+            return;
         }
+        transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position  -  other.GetComponent(typeof(Animal)).transform.forward,0.01f ) ;
+        print("Collision detecter stay");
+
+
         
         //Feed( (Species) other.GetComponent<Species>()); marche pas
 	}
@@ -98,12 +105,16 @@ public abstract class Animal : Species, AnimalManager{
         
     }
 
-    private void OnCollisionStay(Collision other){
+    protected void OnCollisionStay(Collision other){
         if( familyBoidId != other.gameObject.GetComponent<Animal>().familyBoidId ){
             Attack( other.gameObject.GetComponent<Animal>() );
             if( other.gameObject.GetComponent<Animal>().lifePoint <= 0 ){
                 Feed( other.gameObject.GetComponent<Animal>() );
+                print("Collision familiale");
+                return;
             }
+            Feed( other.gameObject.GetComponent<Species>() );
+            print("Collision manger");
         }
     }
 

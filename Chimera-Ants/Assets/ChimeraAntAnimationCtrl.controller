@@ -29,7 +29,7 @@ AnimatorState:
   m_PrefabInternal: {fileID: 0}
   m_Name: ChimeraAntWalkingCycle
   m_Speed: 4
-  m_CycleOffset: 0
+  m_CycleOffset: 1
   m_Transitions: []
   m_StateMachineBehaviours: []
   m_Position: {x: 50, y: 50, z: 0}
@@ -40,7 +40,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: f7a94af884e784bdf8db8f9636df658c, type: 3}
+  m_Motion: {fileID: 7400000, guid: 5cc08e228ff7a40cdb8529ca6f70eb49, type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 

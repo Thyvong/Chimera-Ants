@@ -59,6 +59,7 @@ public abstract class Species : Element, SpeciesManager{
             RestoreLifePoints();
             hunger = 0;
             species.Death();
+            Destroy(species);
             print("EAT !! ");
         }
         
