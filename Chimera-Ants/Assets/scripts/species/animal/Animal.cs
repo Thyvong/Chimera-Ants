@@ -1,5 +1,5 @@
 ﻿//This class represent all kind of animals and their behaviour
-
+using UnityEngine;
 
 public abstract class Animal : Species, AnimalManager{
     public NutritionStyle[] nutritionStyle { get; protected set; }
@@ -55,9 +55,60 @@ public abstract class Animal : Species, AnimalManager{
    public abstract void familyBehaviour();
    public abstract void stateBehaviour();
    
-   public abstract void Attack(Species species);
    public abstract bool RunAway(Animal animal);
    public abstract void other();
 
+    public void Attack(Species species){
+        if(species.lifePoint > 0){
+			species.TakeDamage( strength * weight );
+		}
+    }
+
+    private void OnTriggerEnter(Collider other){
+
+        if( RunAway( (Animal) other.GetComponent(typeof(Animal)) ) == true ){
+            print("RunAway true"); 
+            transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position*(-1f),0.1f ) ;
+        }
+
+	}
+
+	private void OnTriggerStay(Collider other){
+
+        if( RunAway( (Animal) other.GetComponent(typeof(Animal)) ) == false ){
+            print("RunAway false on s'approche"); 
+            transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position  -  other.GetComponent(typeof(Animal)).transform.forward,0.01f ) ;
+        }
+        
+        //Feed( (Species) other.GetComponent<Species>()); marche pas
+	}
+	
+	private void OnTriggerExit(Collider other){
+		if( RunAway( (Animal) other.GetComponent(typeof(Animal)) ) == false ){
+            print("RunAway false"); 
+            transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position  -  other.GetComponent(typeof(Animal)).transform.forward,0.01f ) ;
+        }
+	}
+
+
+
+    private void OnCollisionEnter(Collision other){
+
+        
+        
+    }
+
+    private void OnCollisionStay(Collision other){
+        if( familyBoidId != other.gameObject.GetComponent<Animal>().familyBoidId ){
+            Attack( other.gameObject.GetComponent<Animal>() );
+            if( other.gameObject.GetComponent<Animal>().lifePoint <= 0 ){
+                Feed( other.gameObject.GetComponent<Animal>() );
+            }
+        }
+    }
+
+    private void OnCollisionExit(Collision other){
+        
+    }
 
 }

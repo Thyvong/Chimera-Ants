@@ -57,9 +57,11 @@ public abstract class Species : Element, SpeciesManager{
     public virtual void Feed(Species species){
         if(lifePoint <= baseLifePoint-10){
             RestoreLifePoints();
+            hunger = 0;
+            species.Death();
+            print("EAT !! ");
         }
-        hunger = 0;
-        species.Death();
+        
     }
 
     protected void RestoreLifePoints(){
@@ -97,19 +99,37 @@ public abstract class Species : Element, SpeciesManager{
             resistance += 1f;
 		}
 
-        print("base life point " + baseLifePoint);
+        /*print("base life point " + baseLifePoint);
         print("life point " + lifePoint);
-        print("hunger " + hunger);
+        print("hunger " + hunger);*/
     }
 
     protected void Death()
     {
-        if (lifePoint <= 0 || longevity <= 0 || baseLifePoint <= 20)
+        if (/* lifePoint <= 0 || */ longevity <= 0 /* || baseLifePoint <= 20*/)
         {
             print("death");
             Destroy(gameObject);
         }
     }
     //protected setSpiecesBoidReference    
+
+    private void OnTriggerEnter(Collider other){
+
+	}
+
+	private void OnTriggerStay(Collider other){
+		
+	}
+	
+	private void OnTriggerExit(Collider other){
+		//print("collision exit");
+	}
+
+    private void Update(){
+        Developpement();
+    }
+
+    
 
 }

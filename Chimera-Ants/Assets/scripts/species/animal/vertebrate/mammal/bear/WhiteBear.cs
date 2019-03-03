@@ -19,7 +19,7 @@ public class WhiteBear : Bear{
 	public void dangerEvaluation(Species species){
 		//return 0;
 	}
-   	public override void Attack(Species species){}
+   	//public override void Attack(Species species){}
    	public override bool RunAway(Animal animal){
    		return false;
    	}

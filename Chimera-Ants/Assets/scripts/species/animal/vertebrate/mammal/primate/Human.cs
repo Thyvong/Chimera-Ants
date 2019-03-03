@@ -20,7 +20,7 @@ public class Human : Primate, HumanManager{
 	public void dangerEvaluation(Species species){
 		//return ;
 	}
-   	public override void Attack(Species species){}
+   	//public override void Attack(Species species){}
    	public override bool RunAway(Animal animal){
    		return false;
    	}
