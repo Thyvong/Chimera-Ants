@@ -258,12 +258,12 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 
 
 	private void Update(){
+        Wander();
         if(Input.GetMouseButtonDown(0))
         {
             if (status == ChimeraAntClass.Queen)
                 SpawnChildren();
-            else
-                Deplacement(transform.forward);
+            
         }
     }
 }

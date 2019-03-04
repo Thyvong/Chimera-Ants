@@ -20,9 +20,11 @@ public abstract class Species : Element, SpeciesManager{
     protected Rigidbody _rb;
 
     protected Movement move;
+    
 
     /* Wandering parameters */
     private bool canmove ;
+    private bool groundedSpecies = true;
     private float waittimer = 0;
     private float walktimer = 0;
     private float turntimer = 0;
@@ -90,7 +92,7 @@ public abstract class Species : Element, SpeciesManager{
     }
     public void Wander()
     {
-        if (canMove)
+        if (canmove)
         {
             WanderTurn();
             WanderWalk();
@@ -114,6 +116,7 @@ public abstract class Species : Element, SpeciesManager{
         {
             walktimer = Random.Range(0, 10);
             randomDirection = new Vector3(Random.Range(-1, 1), Random.Range(-1, 1), Random.Range(-1, 1));
+            if (groundedSpecies) randomDirection.y = 0;
             canmove = false;
         }
     }
@@ -127,7 +130,10 @@ public abstract class Species : Element, SpeciesManager{
         else
         {
             turntimer = Random.Range(0, 10);
-            randomRotation = new Vector3(Random.Range(-1, 1), Random.Range(-1, 1), Random.Range(-1, 1));
+            if (groundedSpecies)
+                randomRotation = new Vector3(0, Random.Range(-1, 1), 0);
+            else
+                randomRotation = new Vector3(Random.Range(-1, 1), Random.Range(-1, 1), Random.Range(-1, 1));
         }
     }
     public virtual void WanderWait()
