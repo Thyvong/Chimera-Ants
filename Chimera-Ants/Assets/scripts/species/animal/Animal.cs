@@ -92,56 +92,9 @@ public abstract class Animal : Species, AnimalManager{
 		}
     }
 
-    private void OnTriggerEnter(Collider other){
+    
 
-        /*if( RunAway( (Animal) other.GetComponent(typeof(Animal)) ) == true ){
-            print("RunAway true"); 
-            transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position*(-1f),0.1f ) ;
-        }
-        transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position  -  other.GetComponent(typeof(Animal)).transform.forward,0.01f ) ;
-        print("Collision detecter enter");*/
-
-	}
-
-	private void OnTriggerStay(Collider other){
-
-        if( RunAway( (Animal) other.GetComponent(typeof(Animal)) ) == false ){
-            print("RunAway false on s'approche"); 
-            
-            if( Vector3.Distance(transform.position,other.GetComponent(typeof(Animal)).transform.position ) > 3.5f ){
-                transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position  /*-  other.GetComponent(typeof(Animal)).transform.forward*/,0.01f ) ;
-                Deplacement(transform.forward);
-            }
-            else{
-                transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position*(-1) /* -  other.GetComponent(typeof(Animal)).transform.forward*/,0.01f ) ;
-                Deplacement(transform.forward);
-            }
-            
-            return;
-        }
-        //transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position  -  other.GetComponent(typeof(Animal)).transform.forward,0.01f ) ;
-        print("Collision detecter stay");
-
-
-        
-        //Feed( (Species) other.GetComponent<Species>()); marche pas
-	}
-	
-	private void OnTriggerExit(Collider other){
-		/* if( RunAway( (Animal) other.GetComponent(typeof(Animal)) ) == false ){
-            print("RunAway false"); 
-            transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position  -  other.GetComponent(typeof(Animal)).transform.forward,0.01f ) ;
-        }*/
-        
-	}
-
-
-
-    private void OnCollisionEnter(Collision other){
-
-        
-        
-    }
+    
 
     protected void OnCollisionStay(Collision other){
         if( familyBoidId != other.gameObject.GetComponent<Animal>().familyBoidId ){
@@ -156,14 +109,11 @@ public abstract class Animal : Species, AnimalManager{
         }
     }
 
-    private void OnCollisionExit(Collision other){
-        
-    }
 
     protected virtual void Deplacement(Vector3 direction)
     {
-        transform.LookAt(transform.position + direction);
-        _rb.MovePosition(transform.position + transform.forward * speed * Time.deltaTime);
+        move.Apply(direction);
+        print(name + " Moving at " + move.speed);
     }
     public void Wander()
     {
@@ -224,35 +174,8 @@ public abstract class Animal : Species, AnimalManager{
             canmove = true;
         }
     }
-    protected virtual void ReactTo(Animal animal)
-    {
-        if (animal.GetType() == GetType())
-        {
-            // reaction
-        }
-        else
-        {
-            // reaction
-            
-        }
-    }
-    /*
+    
 
-    [NORMAL, ATTACK, FUITE]
-    theres something
-        plante
-            eat if NORMAL
-        animal
-            meme especes
-                reaction
-            differente
-                assess danger and change mode
-                    attack
-                    flee
-                    neutral
-                
-       
-*/
     protected void OnTriggerEnter(Collider other)
     {
         
@@ -281,7 +204,7 @@ public abstract class Animal : Species, AnimalManager{
                 {
                     print(name + ": Oh thats a " + ani.GetType());
                     DangerEvaluation(ani);
-                    if (RunAway(ani))
+                    if (RunAway(ani)) // Jamais vu fuir pour l'instant
                     {
                         print(name + ": NIGEROOOOO ");
                         attacking = false;
@@ -341,8 +264,6 @@ public abstract class Animal : Species, AnimalManager{
         }
     }
 
-
-    public abstract void Attack(Species species);
     
     public abstract bool RunAway(Animal animal);
     public abstract void other();
@@ -372,55 +293,4 @@ public abstract class Animal : Species, AnimalManager{
     }
 
 }
-/*
 
-    protected void DefineTarget()
-    {
-        GameObject mindanger = gameObject, maxdanger= gameObject; // initialisé à soi-même pour les tests d'inégalités
-        Animal animal;
-        for (int i = 0; i < detected.Count; i++)
-        {
-            animal = detected[i].GetComponent<Animal>();
-            if (animal) // est-ce un animal
-            {
-                if(maxdanger != gameObject) // s'il existe qqch de plus dangereux que moi, pas la peine de chercher des plus faibles
-                {
-                    if (animal.dangerLvl > maxdanger.GetComponent<Animal>().dangerLvl) // animal est-il plus dangereux que maxdanger
-                    {
-                        maxdanger = animal.gameObject;
-                    }
-                }
-                else
-                {
-                    // peut-être qu'on n'a pas encore trouvé un danger dans la liste
-                    if (animal.dangerLvl > dangerLvl) // animal est-il plus dangereux que moi
-                    {
-                        maxdanger = animal.gameObject;
-                        // à ce stade, on a trouvé un danger, on regarde s'il y a plus dangereux encore dans la condition plus haut
-                    }
-                    else
-                    {
-                        if (animal.dangerLvl <= mindanger.GetComponent<Animal>().dangerLvl) // une proie plus facile ?
-                        {
-                            mindanger = animal.gameObject;
-                        }
-                    }
-                }
-                
-            }
-        }
-        if (maxdanger != gameObject) // un dangereux prédateur
-        {
-            target = maxdanger;
-            return;
-        }
-        if(mindanger != gameObject) // une proie
-        {
-            target = mindanger;
-            return;
-        }
-        target= null; // aucune cible
-    }
-                
-       
-*/

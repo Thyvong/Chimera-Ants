@@ -43,15 +43,8 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 
 	}
     
-    // Species method
-
-	//A faire remonter dans Species FAIT
-	protected override void Deplacement(Vector3 direction){
-        move.Apply(direction);
-        print(name + " Moving at " + move.speed);
-    }
-
-	//FAIT
+    
+	
     private ChimeraAnt SpawnChildren()
     {
         if (status != ChimeraAntClass.Queen) return null;
@@ -177,19 +170,10 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 		}
 	}
    	
-	//A faire dans Animal
-	/* public override void Attack(Species species)
-    {
-		if(species.lifePoint > 0){
-			species.TakeDamage( strength * weight );
-		}
-	}*/
-	
 	/* public Species feedQueen(Species spieces){
 
 	}*/
-
-	//A faire dans Animal
+    
     // Qui runaway ? la chimera ant ou l'animal ? FAIT
 	public override bool RunAway(Animal animal){
 
