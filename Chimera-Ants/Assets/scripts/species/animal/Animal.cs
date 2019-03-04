@@ -66,12 +66,12 @@ public abstract class Animal : Species, AnimalManager{
 
     private void OnTriggerEnter(Collider other){
 
-        if( RunAway( (Animal) other.GetComponent(typeof(Animal)) ) == true ){
+        /*if( RunAway( (Animal) other.GetComponent(typeof(Animal)) ) == true ){
             print("RunAway true"); 
             transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position*(-1f),0.1f ) ;
         }
         transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position  -  other.GetComponent(typeof(Animal)).transform.forward,0.01f ) ;
-        print("Collision detecter enter");
+        print("Collision detecter enter");*/
 
 	}
 
@@ -79,10 +79,19 @@ public abstract class Animal : Species, AnimalManager{
 
         if( RunAway( (Animal) other.GetComponent(typeof(Animal)) ) == false ){
             print("RunAway false on s'approche"); 
-            transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position  -  other.GetComponent(typeof(Animal)).transform.forward,0.01f ) ;
+            
+            if( Vector3.Distance(transform.position,other.GetComponent(typeof(Animal)).transform.position ) > 3.5f ){
+                transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position  /*-  other.GetComponent(typeof(Animal)).transform.forward*/,0.01f ) ;
+                Deplacement(transform.forward);
+            }
+            else{
+                transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position*(-1) /* -  other.GetComponent(typeof(Animal)).transform.forward*/,0.01f ) ;
+                Deplacement(transform.forward);
+            }
+            
             return;
         }
-        transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position  -  other.GetComponent(typeof(Animal)).transform.forward,0.01f ) ;
+        //transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position  -  other.GetComponent(typeof(Animal)).transform.forward,0.01f ) ;
         print("Collision detecter stay");
 
 
@@ -91,10 +100,11 @@ public abstract class Animal : Species, AnimalManager{
 	}
 	
 	private void OnTriggerExit(Collider other){
-		if( RunAway( (Animal) other.GetComponent(typeof(Animal)) ) == false ){
+		/* if( RunAway( (Animal) other.GetComponent(typeof(Animal)) ) == false ){
             print("RunAway false"); 
             transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position  -  other.GetComponent(typeof(Animal)).transform.forward,0.01f ) ;
-        }
+        }*/
+        
 	}
 
 
