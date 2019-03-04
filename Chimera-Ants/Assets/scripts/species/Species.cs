@@ -1,5 +1,6 @@
 ﻿// This class represent all kind of living species animals, vegetals, bacterium, mushroom
 
+using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class Species : Element, SpeciesManager{
@@ -18,11 +19,11 @@ public abstract class Species : Element, SpeciesManager{
     public float visionRange { get; protected set; }
 
     protected Rigidbody _rb;
-
+    
 
     //private static int speciesBoidIdReference = 0;
     //protected int spiecesBoidId;
-    private void Awake()
+    protected virtual void Awake()
     {
         _rb = gameObject.AddComponent<Rigidbody>();
         _rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
@@ -33,6 +34,7 @@ public abstract class Species : Element, SpeciesManager{
         _rb.useGravity = true;
         _rb.interpolation = RigidbodyInterpolation.Interpolate;
         _rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+
         
     }
     protected Species(){
@@ -62,6 +64,7 @@ public abstract class Species : Element, SpeciesManager{
             Destroy(species);
             print("EAT !! ");
         }
+        hunger = 0;
         
     }
 
@@ -76,11 +79,6 @@ public abstract class Species : Element, SpeciesManager{
         return totalDamage;
     }
 
-    protected virtual void Deplacement(Vector3 direction){
-        transform.LookAt(transform.position + direction);
-        _rb.MovePosition(transform.position + transform.forward * speed * Time.deltaTime);
-    }
-    
     public virtual void Developpement()
     {
         Death();
@@ -114,23 +112,5 @@ public abstract class Species : Element, SpeciesManager{
         }
     }
     //protected setSpiecesBoidReference    
-
-    private void OnTriggerEnter(Collider other){
-
-	}
-
-	private void OnTriggerStay(Collider other){
-		
-	}
-	
-	private void OnTriggerExit(Collider other){
-		//print("collision exit");
-	}
-
-    private void Update(){
-        Developpement();
-    }
-
-    
 
 }

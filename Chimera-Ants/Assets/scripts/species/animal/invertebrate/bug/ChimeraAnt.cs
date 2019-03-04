@@ -14,9 +14,13 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 	private new static int familyBoidIdReference = 0;
     private bool _isKingBorn = false;
 
-    //Constructor FAIT
-    private void Start()
-	{
+    //Constructor
+    protected override void Awake()
+    {
+        base.Awake();
+    
+        print("CHIMERA ANT " + name + "has started");
+
         System.Random random = new System.Random();
         if (random.Next() % 2 == 0)
         {
@@ -32,15 +36,20 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
         SetAnimalBoidId(0);
 		resistance = 1000;
 		longevity = longevity * 15f;
-        print("LONGEVITY = " + longevity);
+
+        print(longevity);
+
+        move = new ChimeraAntMove(_rb);
+
 	}
     
     // Species method
 
 	//A faire remonter dans Species FAIT
 	protected override void Deplacement(Vector3 direction){
-		base.Deplacement(direction);
-	}
+        move.Apply(direction);
+        print(name + " Moving at " + move.speed);
+    }
 
 	//FAIT
     private ChimeraAnt SpawnChildren()
@@ -81,7 +90,11 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
             }
         }
         print("Instatiating " + source);
-        ChimeraAnt go =( (GameObject)Instantiate(Resources.Load(source), transform.position - transform.forward, new Quaternion())).GetComponent<ChimeraAnt>();
+
+        ChimeraAnt go =( (GameObject)Instantiate(Resources.Load(source), transform.position - transform.forward, new Quaternion())).GetComponent< ChimeraAnt>();
+        print("Transmitting movement ");
+        ((ChimeraAntMove)move).InheritMovement((ChimeraAntMove)go.move); // transmitting queen's movement qualities to newborn
+        
         return go;
     }
 
@@ -207,18 +220,14 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
     public void geneticalEvolution(){}
 
 
-	private void Update(){
 
-		Developpement();
-        if (longevity%100 == 0){
-			SpawnChildren();
-		}
-	}
-
-	private void OnTriggerEnter(Collider other){
-
-		if(other.GetComponent(typeof(ChimeraAnt)).GetType() == typeof(ChimeraAnt)){
-			QueenModeActivation( (ChimeraAnt) other.GetComponent(typeof(ChimeraAnt)) );
-		}
-	}
+	protected override void Update(){
+        base.Update();
+        if(Input.GetMouseButtonDown(0))
+        {
+            if (status == ChimeraAntClass.Queen)
+                SpawnChildren();
+            
+        }
+    }
 }
