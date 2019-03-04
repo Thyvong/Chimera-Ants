@@ -21,8 +21,8 @@ public class Chimpanzee : Primate{
 		//return 0;
 	}
    	//public override void Attack(Species species){}
-   	public override bool RunAway(Animal animal){
+   	/*public override bool RunAway(Animal animal){
    		return false;
-   	}
+   	}*/
    	public override void other(){}
 }

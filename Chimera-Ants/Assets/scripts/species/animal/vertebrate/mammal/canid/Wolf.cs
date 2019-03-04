@@ -4,8 +4,16 @@ public class Wolf : Canid{
     // Species method
 	private void developpement(){}
     public override Species Reproduction(Species species){
-    	Wolf wolf = new Wolf();
-    	return wolf;
+    	
+		if(species.GetType() == typeof(Wolf)){
+			Wolf w = (Wolf) species;
+			if( (sex == Sex.Female && w.sex == Sex.Male) || (sex == Sex.Male && w.sex == Sex.Female) ){
+				Wolf wolf = new Wolf();
+				return wolf;
+			}
+		}
+		return null;
+    	
     }
     public void feed(Species species){}
     public override void Drink(){}
@@ -20,8 +28,14 @@ public class Wolf : Canid{
 		//return 0;
 	}
    	//public override void Attack(Species species){}
-   	public override bool RunAway(Animal animal){
+   	/*public override bool RunAway(Animal animal){
    		return false;
-   	}
+   	}*/
    	public override void other(){}
+
+	public override void Start(){
+		resistance = 2;
+		longevity = longevity * 8f;
+		weight = 60;
+	}
 }

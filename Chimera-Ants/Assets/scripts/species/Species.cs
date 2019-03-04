@@ -33,6 +33,8 @@ public abstract class Species : Element, SpeciesManager{
         _rb.useGravity = true;
         _rb.interpolation = RigidbodyInterpolation.Interpolate;
         _rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+
+        
         
     }
     protected Species(){

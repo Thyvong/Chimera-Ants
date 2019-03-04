@@ -55,9 +55,51 @@ public abstract class Animal : Species, AnimalManager{
    public abstract void familyBehaviour();
    public abstract void stateBehaviour();
    
-   public abstract bool RunAway(Animal animal);
+   //public abstract bool RunAway(Animal animal);
+
+    public virtual void Start(){
+        System.Random random = new System.Random();
+        if (random.Next() % 2 == 0)
+        {
+            sex = Sex.Male;
+        }
+        else
+        {
+            sex = Sex.Female;
+        }
+   }
+
+   public bool RunAway(Animal animal){
+
+        if(dangerLvl >= 3){
+            // ca rpz quoi ?
+            System.Random random = new System.Random();
+            int rand = random.Next(0,10);
+
+            if(animal.dangerLvl > 3){
+                rand -= random.Next(1,animal.dangerLvl);
+            }
+
+            if(animal.dangerLvl <= 3){
+                rand += random.Next(1,animal.dangerLvl);
+            }
+
+            if(rand >= 5){
+                print("DANGER");
+                return true;
+            }
+                
+        }
+        print("NO DANGER");
+        return false;
+   	}
+
    public abstract void other();
 
+    public void Awake(){
+        GetComponent<SphereCollider>().isTrigger = true;
+    }
+    
     public void Attack(Species species){
         if(species.lifePoint > 0){
 			species.TakeDamage( strength * weight );
@@ -77,22 +119,24 @@ public abstract class Animal : Species, AnimalManager{
 
 	private void OnTriggerStay(Collider other){
 
-        if( RunAway( (Animal) other.GetComponent(typeof(Animal)) ) == false ){
+        /*if( RunAway( (Animal) other.GetComponent(typeof(Animal)) ) == false ){
             print("RunAway false on s'approche"); 
             
             if( Vector3.Distance(transform.position,other.GetComponent(typeof(Animal)).transform.position ) > 3.5f ){
-                transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position  /*-  other.GetComponent(typeof(Animal)).transform.forward*/,0.01f ) ;
-                Deplacement(transform.forward);
-            }
+                transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position ,0.01f ) ;
+                //Deplacement(transform.forward);
+            /*}
             else{
-                transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position*(-1) /* -  other.GetComponent(typeof(Animal)).transform.forward*/,0.01f ) ;
-                Deplacement(transform.forward);
-            }
+                transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position*(-1),0.01f ) ;
+                //Deplacement(transform.forward);
+            /*}
             
             return;
         }
         //transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position  -  other.GetComponent(typeof(Animal)).transform.forward,0.01f ) ;
-        print("Collision detecter stay");
+        print("Collision detecter stay");*/
+
+        Deplacement(transform.forward);
 
 
         
@@ -115,7 +159,7 @@ public abstract class Animal : Species, AnimalManager{
         
     }
 
-    protected void OnCollisionStay(Collision other){
+   /*protected void OnCollisionStay(Collision other){
         if( familyBoidId != other.gameObject.GetComponent<Animal>().familyBoidId ){
             Attack( other.gameObject.GetComponent<Animal>() );
             if( other.gameObject.GetComponent<Animal>().lifePoint <= 0 ){
@@ -126,7 +170,7 @@ public abstract class Animal : Species, AnimalManager{
             Feed( other.gameObject.GetComponent<Species>() );
             print("Collision manger");
         }
-    }
+    }*/
 
     private void OnCollisionExit(Collision other){
         

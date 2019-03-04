@@ -15,9 +15,9 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
     private bool _isKingBorn = false;
 
     //Constructor FAIT
-    private void Start()
+    public override void Start()
 	{
-        System.Random random = new System.Random();
+        /*System.Random random = new System.Random();
         if (random.Next() % 2 == 0)
         {
             sex = Sex.Male;
@@ -25,14 +25,15 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
         else
         {
             sex = Sex.Female;
-        }
+        }*/
 		if(status == ChimeraAntClass.King){
 			sex = Sex.Male;
 		}
+
         SetAnimalBoidId(0);
 		resistance = 1000;
 		longevity = longevity * 15f;
-        print("LONGEVITY = " + longevity);
+		weight = 150 * 0.000000001f;
 	}
     
     // Species method
@@ -45,6 +46,8 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 	//FAIT
     private ChimeraAnt SpawnChildren()
     {
+		int familyId = familyBoidId;
+
         if (status != ChimeraAntClass.Queen) return null;
 
         string source = "Prefabs/";
@@ -54,6 +57,9 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
         {
             source += "AntKing";
             _isKingBorn = true;
+			familyBoidIdReference++;
+
+			familyId = familyBoidIdReference;
         }
         else
         {
@@ -75,13 +81,12 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
                 else
                 {
                     source += "AntSoldier";
-                }
-                    
-                
+                }        
             }
         }
         print("Instatiating " + source);
         ChimeraAnt go =( (GameObject)Instantiate(Resources.Load(source), transform.position - transform.forward, new Quaternion())).GetComponent<ChimeraAnt>();
+		go.familyBoidId = familyId;
         return go;
     }
 
@@ -115,6 +120,7 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 			if(cAnt.sex == Sex.Female){
 				cAnt.status = ChimeraAntClass.Queen;
 				print("PONDEUSE !!!");
+				Destroy(gameObject);
 			}
 		}
 	}
@@ -178,7 +184,7 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 
 	//A faire dans Animal
     // Qui runaway ? la chimera ant ou l'animal ? FAIT
-	public override bool RunAway(Animal animal){
+	/*public override bool RunAway(Animal animal){
 
 		if(dangerLvl >= 3){
             // ca rpz quoi ?
@@ -201,7 +207,8 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 		}
 		print("NO DANGER");
    		return false;
-   	}
+   	}*/
+	   
    	public override void other(){}
     //Chimera-ants special method
     public void geneticalEvolution(){}
@@ -215,10 +222,10 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 		}
 	}
 
-	private void OnTriggerEnter(Collider other){
+	/*private void OnTriggerEnter(Collider other){
 
 		if(other.GetComponent(typeof(ChimeraAnt)).GetType() == typeof(ChimeraAnt)){
 			QueenModeActivation( (ChimeraAnt) other.GetComponent(typeof(ChimeraAnt)) );
 		}
-	}
+	}*/
 }
