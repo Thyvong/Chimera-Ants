@@ -60,7 +60,7 @@ public abstract class Animal : Species, AnimalManager{
 
     public virtual void DangerEvaluation(Species species){
 
-        if(species.GetType() == typeof(Animal)){
+        if(species.GetType().IsSubclassOf(typeof(Animal))){
 			Animal animal = (Animal) species;
 			if(animal.animalBoidId != animalBoidId){ // ?? si animal is not this ??
 				increaseDangerLvl(1);
@@ -95,7 +95,7 @@ public abstract class Animal : Species, AnimalManager{
     
 
     
-
+    /*
     protected void OnCollisionStay(Collision other){
         if( familyBoidId != other.gameObject.GetComponent<Animal>().familyBoidId ){
             Attack( other.gameObject.GetComponent<Animal>() );
@@ -108,7 +108,7 @@ public abstract class Animal : Species, AnimalManager{
             print("Collision manger");
         }
     }
-
+    */
 
     protected virtual void Deplacement(Vector3 direction)
     {
@@ -198,12 +198,14 @@ public abstract class Animal : Species, AnimalManager{
                 if (ani.GetType() == GetType()) // same species ?
                 {
                     // group behaviours ?
+                    print(name + " : YOU ARE MY FRIEND " + ani.name);
                     // target assignement not needed ?
                 }
                 else
                 {
                     print(name + ": Oh thats a " + ani.GetType());
                     DangerEvaluation(ani);
+                    print(name + ": dangerlvl = " + dangerLvl);
                     if (RunAway(ani)) // Jamais vu fuir pour l'instant
                     {
                         print(name + ": NIGEROOOOO ");
@@ -285,7 +287,7 @@ public abstract class Animal : Species, AnimalManager{
             {
                 move.direction = Vector3.Normalize(target.transform.position - transform.position);
             }
-            if(!withinreach)
+            if(!withinreach || fleeing)
                 move.Apply(move.direction);
         }
         
