@@ -257,8 +257,8 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
     public void geneticalEvolution(){}
 
 
-	private void Update(){
-        Wander();
+	protected override void Update(){
+        base.Update();
         if(Input.GetMouseButtonDown(0))
         {
             if (status == ChimeraAntClass.Queen)

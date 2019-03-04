@@ -1,5 +1,6 @@
 ﻿// This class represent all kind of living species animals, vegetals, bacterium, mushroom
 
+using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class Species : Element, SpeciesManager{
@@ -18,18 +19,7 @@ public abstract class Species : Element, SpeciesManager{
     public float visionRange { get; protected set; }
 
     protected Rigidbody _rb;
-
-    protected Movement move;
     
-
-    /* Wandering parameters */
-    private bool canmove ;
-    private bool groundedSpecies = true;
-    private float waittimer = 0;
-    private float walktimer = 0;
-    private float turntimer = 0;
-    private Vector3 randomRotation = Vector3.zero;
-    private Vector3 randomDirection = Vector3.zero;
 
     //private static int speciesBoidIdReference = 0;
     //protected int spiecesBoidId;
@@ -44,9 +34,8 @@ public abstract class Species : Element, SpeciesManager{
         _rb.useGravity = true;
         _rb.interpolation = RigidbodyInterpolation.Interpolate;
         _rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-        
-        
 
+        
     }
     protected Species(){
 
@@ -72,7 +61,7 @@ public abstract class Species : Element, SpeciesManager{
             RestoreLifePoints();
         }
         hunger = 0;
-        species.Death();
+        
     }
 
     protected void RestoreLifePoints(){
@@ -84,70 +73,6 @@ public abstract class Species : Element, SpeciesManager{
         float totalDamage = damage / resistance * weight;
         lifePoint -= totalDamage;
         return totalDamage;
-    }
-
-    protected virtual void Deplacement(Vector3 direction){
-        transform.LookAt(transform.position + direction);
-        _rb.MovePosition(transform.position + transform.forward * speed * Time.deltaTime);
-    }
-    public void Wander()
-    {
-        if (canmove)
-        {
-            WanderTurn();
-            WanderWalk();
-        }
-        else
-        {
-            WanderWait();
-        }
-        
-        
-
-    }
-    public virtual void WanderWalk()
-    {
-        if (walktimer > 0)
-        {
-            move.Apply(randomDirection);
-            walktimer -= Time.fixedDeltaTime;
-        }
-        else
-        {
-            walktimer = Random.Range(0, 10);
-            randomDirection = new Vector3(Random.Range(-1, 1), Random.Range(-1, 1), Random.Range(-1, 1));
-            if (groundedSpecies) randomDirection.y = 0;
-            canmove = false;
-        }
-    }
-    public virtual void WanderTurn()
-    {
-        if (turntimer > 0)
-        {
-            transform.Rotate(randomRotation);
-            turntimer -= Time.fixedDeltaTime;
-        }
-        else
-        {
-            turntimer = Random.Range(0, 10);
-            if (groundedSpecies)
-                randomRotation = new Vector3(0, Random.Range(-1, 1), 0);
-            else
-                randomRotation = new Vector3(Random.Range(-1, 1), Random.Range(-1, 1), Random.Range(-1, 1));
-        }
-    }
-    public virtual void WanderWait()
-    {
-        if (waittimer > 0)
-        {
-
-            waittimer -= Time.fixedDeltaTime;
-        }
-        else
-        {
-            waittimer = Random.Range(0, 10);
-            canmove = true;
-        }
     }
 
     public virtual void Developpement()
@@ -183,5 +108,5 @@ public abstract class Species : Element, SpeciesManager{
         }
     }
     //protected setSpiecesBoidReference    
-
+    
 }

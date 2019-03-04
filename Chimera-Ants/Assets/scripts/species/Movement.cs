@@ -99,7 +99,16 @@ public class ChimeraAntMove : Movement
 }
 
 
+public class DefaultMove : Movement
+{
+    public DefaultMove(Rigidbody rigidbody, Vector3 dir, float maxvitesse, float maxaccel) : base(rigidbody, dir, maxvitesse, maxaccel)
+    {
+        knownMode.Add("Walk", new Walk());
+        currentMode = knownMode["Walk"];
+    }
+    public DefaultMove(Rigidbody rigidbody) : this(rigidbody, rigidbody.transform.forward, 1, 0.3f) { }
 
+}
 
 public class RabbitMove : Movement
 {
