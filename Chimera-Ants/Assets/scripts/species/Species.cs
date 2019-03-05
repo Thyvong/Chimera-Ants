@@ -11,7 +11,7 @@ public abstract class Species : Element, SpeciesManager{
     public float lifePoint { get; protected set; } //Life point -> if lifePoint = 0 -> death
     public float baseLifePoint { get; protected set; }
 
-    public float resistance { get; protected set; } //value between 0 and 1 more the value is high more the spieces is resistant
+    public float resistance { get; protected set; } //higher value => the spieces is  more resistant
     public float weight { get; protected set; }
 
     public bool dead = false;
@@ -80,8 +80,9 @@ public abstract class Species : Element, SpeciesManager{
 
     public virtual void Developpement()
     {
+        hunger += Time.deltaTime;
         //if the species didn't eat for too long
-		if(hunger >= 500){
+		if(hunger >= 70){
             //it weakens
 			lifePoint --;
 			baseLifePoint --;
@@ -92,7 +93,7 @@ public abstract class Species : Element, SpeciesManager{
 		if(hunger <= 10){
             //it grows well
 			baseLifePoint += 0.1f;
-            resistance += 1f;
+            resistance += 0.1f;
 		}
         
     }

@@ -8234,7 +8234,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  treeModel: {fileID: 1545087800431222, guid: 7fcc6ec42b3ba65409a52157186103e4, type: 2}
+  treeModel: {fileID: 0}
   treeList: {fileID: 964088341}
   rockModel: {fileID: 100000, guid: 256e87f76b4fe1a408faec2024c79966, type: 3}
   rockList: {fileID: 482923865}
@@ -32601,7 +32601,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1762341409081254, guid: a18370e27e6b9044aba72893c7031e73, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a18370e27e6b9044aba72893c7031e73, type: 2}

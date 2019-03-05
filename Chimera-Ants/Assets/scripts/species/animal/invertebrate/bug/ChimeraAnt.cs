@@ -37,7 +37,7 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 		resistance = 1000;
 		longevity = longevity * 15f;
         strength = 100;
-
+        dietaryRegime = DietaryRegime.Omnivorus;
         move = new ChimeraAntMove(_rb);
 
 	}
@@ -125,9 +125,8 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 	}
     
 	public override void Feed(Species species){
-		if(species.GetType() == typeof(Animal) || species.GetType() == typeof(Vegetal)){
-			base.Feed(species);
-		}
+	    base.Feed(species);
+		
 	}
     public override void Drink(){}
     public override void groupBehaviour(){}
