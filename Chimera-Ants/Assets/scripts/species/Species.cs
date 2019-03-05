@@ -22,7 +22,7 @@ public abstract class Species : Element, SpeciesManager{
 
     //private static int speciesBoidIdReference = 0;
     //protected int spiecesBoidId;
-    private void Awake()
+    /* protected void Awake()
     {
         _rb = gameObject.AddComponent<Rigidbody>();
         _rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
@@ -34,9 +34,10 @@ public abstract class Species : Element, SpeciesManager{
         _rb.interpolation = RigidbodyInterpolation.Interpolate;
         _rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 
-        
-        
-    }
+        if( GetType() == typeof(ChimeraAnt)){
+            print("Awake !!!! ");
+        }
+    }*/
     protected Species(){
 
         // initialisé ici, mais dans le futur, fait cas par cas

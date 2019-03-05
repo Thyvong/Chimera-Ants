@@ -1,5 +1,8 @@
 ﻿//This class represent all kind of animals and their behaviour
 using UnityEngine;
+using System.Collections.Generic;
+
+
 
 public abstract class Animal : Species, AnimalManager{
     public NutritionStyle[] nutritionStyle { get; protected set; }
@@ -12,6 +15,10 @@ public abstract class Animal : Species, AnimalManager{
     public int animalBoidId { get; protected set; } // personal id
     public int familyBoidId { get; protected set; } // group id
     public static int familyBoidIdReference = 0;
+
+    public bool isInBoid = false;
+    public List<Animal> animalInBoids;
+    
 
     
 
@@ -52,7 +59,6 @@ public abstract class Animal : Species, AnimalManager{
     }
 
    public abstract void groupBehaviour();
-   public abstract void familyBehaviour();
    public abstract void stateBehaviour();
    
    //public abstract bool RunAway(Animal animal);
@@ -67,7 +73,11 @@ public abstract class Animal : Species, AnimalManager{
         {
             sex = Sex.Female;
         }
+        print("SEX = " + sex);
+        
    }
+
+
 
    public bool RunAway(Animal animal){
 
@@ -94,12 +104,61 @@ public abstract class Animal : Species, AnimalManager{
         return false;
    	}
 
-   public abstract void other();
+    public abstract void other();
 
+    public virtual void familyBehaviour(){
+        
+    }
+
+    public void boidBehaviour(/*List<Animal> animals*/){
+
+        if(isInBoid == true){
+            
+            Animal nearestNeighbour = null;
+            float minDistance = 999999999f;
+            print("Méthode Boids");
+            foreach(Animal animal in animalInBoids){
+                
+                // Selection of the nearest neighbour
+                if( Vector3.Distance(transform.position, animal.transform.position) < minDistance ){
+                    nearestNeighbour = animal;
+                    minDistance = Vector3.Distance(transform.position, animal.transform.position);
+                    print("Selection du plus proche");
+
+                    transform.position = Vector3.MoveTowards(transform.position, nearestNeighbour.transform.position,0.1f ) ;
+                    transform.LookAt(nearestNeighbour.transform.position);//On s'approche
+                }
+            }
+            
+            if( minDistance < 3.5f ){
+                //on s'éloigne
+                transform.position = Vector3.MoveTowards(transform.position, nearestNeighbour.transform.position*(-1),0.1f ) ;
+                transform.LookAt(nearestNeighbour.transform.position*(-1));//on s'éloigne 
+                print("éloignement");
+            }
+            Vector3 direction = new Vector3(0,0,0);
+            foreach(Animal animal in animalInBoids){
+                direction += animal.transform.forward; 
+            }
+            transform.LookAt(direction);
+            Deplacement(direction);
+            print("Déplacement BOIDS");
+        }  
+    }
     public void Awake(){
         GetComponent<SphereCollider>().isTrigger = true;
+
+        _rb = gameObject.AddComponent<Rigidbody>();
+        _rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+        _rb.mass = weight;
+        _rb.drag = 5;
+        _rb.angularDrag = weight / 10.0f;
+        _rb.isKinematic = false;
+        _rb.useGravity = true;
+        _rb.interpolation = RigidbodyInterpolation.Interpolate;
+        _rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
     }
-    
+
     public void Attack(Species species){
         if(species.lifePoint > 0){
 			species.TakeDamage( strength * weight );
@@ -108,72 +167,46 @@ public abstract class Animal : Species, AnimalManager{
 
     private void OnTriggerEnter(Collider other){
 
-        /*if( RunAway( (Animal) other.GetComponent(typeof(Animal)) ) == true ){
-            print("RunAway true"); 
-            transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position*(-1f),0.1f ) ;
+        if(other.gameObject.GetComponent<Animal>() != null){
+            animalInBoids.Add(other.gameObject.GetComponent<Animal>());
+            print("ajout - Animal OnTriggrEnter");
         }
-        transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position  -  other.GetComponent(typeof(Animal)).transform.forward,0.01f ) ;
-        print("Collision detecter enter");*/
-
-	}
-
-	private void OnTriggerStay(Collider other){
-
-        /*if( RunAway( (Animal) other.GetComponent(typeof(Animal)) ) == false ){
-            print("RunAway false on s'approche"); 
-            
-            if( Vector3.Distance(transform.position,other.GetComponent(typeof(Animal)).transform.position ) > 3.5f ){
-                transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position ,0.01f ) ;
-                //Deplacement(transform.forward);
-            /*}
-            else{
-                transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position*(-1),0.01f ) ;
-                //Deplacement(transform.forward);
-            /*}
-            
-            return;
-        }
-        //transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position  -  other.GetComponent(typeof(Animal)).transform.forward,0.01f ) ;
-        print("Collision detecter stay");*/
-
-        Deplacement(transform.forward);
-
 
         
-        //Feed( (Species) other.GetComponent<Species>()); marche pas
+
+        /* mettre à true isInBoid
+           puis mettre comportement boid dans familyBehaviour
+           puis dans ontriggerEnter appeler familyBehaviour
+           mettre dans update si tab animals non vide alors isInBoids = true
+        */
+
+
 	}
 	
 	private void OnTriggerExit(Collider other){
-		/* if( RunAway( (Animal) other.GetComponent(typeof(Animal)) ) == false ){
-            print("RunAway false"); 
-            transform.position = Vector3.MoveTowards(transform.position, other.GetComponent(typeof(Animal)).transform.position  -  other.GetComponent(typeof(Animal)).transform.forward,0.01f ) ;
-        }*/
-        
+
+        if(other.gameObject.GetComponent<Animal>() != null){
+            animalInBoids.Remove(other.gameObject.GetComponent<Animal>());
+            print("Suppression - animal ontriggerexit");
+        }
 	}
 
-
-
-    private void OnCollisionEnter(Collision other){
-
+    public virtual void Update(){
         
-        
-    }
-
-   /*protected void OnCollisionStay(Collision other){
-        if( familyBoidId != other.gameObject.GetComponent<Animal>().familyBoidId ){
-            Attack( other.gameObject.GetComponent<Animal>() );
-            if( other.gameObject.GetComponent<Animal>().lifePoint <= 0 ){
-                Feed( other.gameObject.GetComponent<Animal>() );
-                print("Collision familiale");
-                return;
-            }
-            Feed( other.gameObject.GetComponent<Species>() );
-            print("Collision manger");
+        if(animalInBoids != null){
+            isInBoid = true;
+            print("Update - isInBoid == true");
         }
-    }*/
+        else{
+            isInBoid = false;
+            print("Update- isInBoid == false");
+        }
+        boidBehaviour();
+        print("UPDATE ANIMAL");
 
-    private void OnCollisionExit(Collision other){
+        
         
     }
+
 
 }

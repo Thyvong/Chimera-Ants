@@ -137,12 +137,11 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
    	public override void stateBehaviour(){
 		if(this.status == ChimeraAntClass.Queen || this.status == ChimeraAntClass.King){
 			state = State.Leader;
-			//print("Leader");
 		}
 		else{
 			state  = State.Follower;
-			//print("Follower");
 		}
+		print("Status - State = " + status + " " + state);
    	}
 
 	//A faire remonter dans Animal FAIT
@@ -213,13 +212,25 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
     //Chimera-ants special method
     public void geneticalEvolution(){}
 
-
-	private void Update(){
-
+	public override void Update(){
+		//base.Update();
 		Developpement();
         if (longevity%100 == 0){
 			SpawnChildren();
 		}
+		Vector3 randDirection;
+		System.Random random = new System.Random();
+		randDirection = new Vector3( 1,0,1 ) ;
+		if(longevity%200 == 0){
+			
+			if(state == State.Leader){
+				randDirection = new Vector3( random.Next(-20,20), 0, random.Next(-20,20));
+				print("Changement DIRECTION");
+			}
+		}
+		Deplacement(randDirection);
+		stateBehaviour();
+		
 	}
 
 	/*private void OnTriggerEnter(Collider other){
