@@ -36,8 +36,7 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
         SetAnimalBoidId(0);
 		resistance = 1000;
 		longevity = longevity * 15f;
-
-        print(longevity);
+        strength = 100;
 
         move = new ChimeraAntMove(_rb);
 

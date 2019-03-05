@@ -4,17 +4,19 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class Species : Element, SpeciesManager{
-    
+
+    public float age { get; protected set; } //A species life expenctancy 
     public float longevity{  get;  protected set;} //A species life expenctancy 
-    public float weight { get; protected set; }
-    public float strength { get; protected set; } //the strength value of a spieces
+    
     public float lifePoint { get; protected set; } //Life point -> if lifePoint = 0 -> death
     public float baseLifePoint { get; protected set; }
-    public float resistance { get; protected set; } //value between 0 and 1 more the value is high more the spieces is resistant
-    public float speed { get; protected set; }
-    public LifeStyle lifeStyle { get; protected set; } //Species lifestyle
 
-    public int hunger { get; protected set; } //time indicator which mesure the time spent without eating
+    public float resistance { get; protected set; } //value between 0 and 1 more the value is high more the spieces is resistant
+    public float weight { get; protected set; }
+
+    public bool dead = false;
+
+    public float hunger { get; protected set; } //time indicator which mesure the time spent without eating (0 = not hungry)
 
     public float visionRange { get; protected set; }
 
@@ -40,14 +42,13 @@ public abstract class Species : Element, SpeciesManager{
     protected Species(){
 
         // initialisé ici, mais dans le futur, fait cas par cas
+        age = 0;
         longevity = 5000;
-        strength = 1;
         weight = 10;
         lifePoint = 100;
         baseLifePoint = 100;
         resistance = 1;
-        lifeStyle = LifeStyle.Settled;
-        speed = 1;
+
         hunger = 0;
         visionRange = 5f;
     }
@@ -59,9 +60,7 @@ public abstract class Species : Element, SpeciesManager{
     public virtual void Feed(Species species){
         if(lifePoint <= baseLifePoint-10){
             RestoreLifePoints();
-            hunger = 0;
-            species.Death();
-            Destroy(species);
+            species.Eaten();
             print("EAT !! ");
         }
         hunger = 0;
@@ -74,15 +73,13 @@ public abstract class Species : Element, SpeciesManager{
     }
     public float TakeDamage(float damage)
     {
-        float totalDamage = damage / resistance * weight;
+        float totalDamage = damage / (resistance * weight);
         lifePoint -= totalDamage;
         return totalDamage;
     }
 
     public virtual void Developpement()
     {
-        Death();
-        hunger ++;
         //if the species didn't eat for too long
 		if(hunger >= 500){
             //it weakens
@@ -97,20 +94,22 @@ public abstract class Species : Element, SpeciesManager{
 			baseLifePoint += 0.1f;
             resistance += 1f;
 		}
-
-        /*print("base life point " + baseLifePoint);
-        print("life point " + lifePoint);
-        print("hunger " + hunger);*/
+        
     }
 
-    protected void Death()
+    protected virtual void Death()
     {
-        if (/* lifePoint <= 0 || */ longevity <= 0 /* || baseLifePoint <= 20*/)
+        if ( lifePoint <= 0 ||  age >= longevity - 100  || baseLifePoint <= 20) // 0hp OR too old OR too weak 
         {
             print("death");
-            Destroy(gameObject);
+            dead = true;
+            
         }
     }
-    //protected setSpiecesBoidReference    
+    // call when predator eat species
+    protected void Eaten()
+    {
+        Destroy(gameObject);
+    }
 
 }

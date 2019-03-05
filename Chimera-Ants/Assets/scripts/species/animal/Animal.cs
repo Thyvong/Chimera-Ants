@@ -2,9 +2,15 @@
 using UnityEngine;
 
 using System.Collections.Generic;
-using UnityEngine;
+using System;
+
 
 public abstract class Animal : Species, AnimalManager{
+
+    public float strength { get; protected set; } //the strength value of an animal
+    public float attackSpeed { get; protected set; }
+    public float attackCD=0;
+    public LifeStyle lifeStyle { get; protected set; } // lifestyle as nomad or settler
     public NutritionStyle[] nutritionStyle { get; protected set; }
     public GroupStyle[] groupStyle { get; protected set; }
     public DietaryRegime dietaryRegime { get; protected set; }
@@ -16,16 +22,16 @@ public abstract class Animal : Species, AnimalManager{
     public int familyBoidId { get; protected set; } // group id
     public static int familyBoidIdReference = 0;
 
+    
 
     protected Movement move;
     
     /* Detection */
     protected SphereCollider FOV; // périmètre de détection, must be IsTrigger
-    private List<GameObject> detected; // espèces dans le périmètre de détection
-    private bool trigger = false;
-    private GameObject target;
-    private bool fleeing = false, attacking = false;
-    bool withinreach = false;
+    private List<Species> detected; // espèces dans le périmètre de détection
+    private Species target;
+    public bool fleeing = false, attacking = false;
+    public bool withinreach = false;
 
     /* Wandering parameters */
     private bool canmove;
@@ -36,6 +42,13 @@ public abstract class Animal : Species, AnimalManager{
     private Vector3 randomRotation = Vector3.zero;
     private Vector3 randomDirection = Vector3.zero;
 
+    protected Animal() : base()
+    {
+        strength = 1;
+        lifeStyle = LifeStyle.Settled;
+        attackSpeed = 1;
+        detected = new List<Species>();
+    }
 
     protected override void Awake()
     {
@@ -87,12 +100,55 @@ public abstract class Animal : Species, AnimalManager{
    public abstract void stateBehaviour();
 
     public void Attack(Species species){
-        if(species.lifePoint > 0){
-			species.TakeDamage( strength * weight );
-		}
+        if(attackCD <= 0)
+        {
+            print(name + " : Attack ! " + strength * weight);
+            if (species.lifePoint > 0)
+            {
+                print(name + " : " + species.name + " took " + species.TakeDamage(strength * weight) + " damages from my attack ");
+                if(species.lifePoint <= 0)
+                {
+                    detected.Remove(target);
+                    target = null;
+                    attacking = false;
+                    fleeing = false;
+                    withinreach = false;
+                    resetDangerLvl();
+                    print(name + " : I killed " + species.name);
+                    
+                }
+            }
+            attackCD = attackSpeed;
+        }
+        
     }
 
-    
+    protected void ReactToEnemy(Animal ani)
+    {
+        print(name + ": Oh thats a " + ani.GetType());
+        DangerEvaluation(ani);
+        print(name + ": dangerlvl = " + dangerLvl);
+        if (RunAway(ani)) 
+        {
+            print(name + ": NIGEROOOOO ");
+
+            attacking = false;
+            fleeing = true;
+            move.direction = Vector3.Normalize(transform.position - ani.transform.position); // sens opposé
+            
+        }
+        else
+        {
+            print(name + ": TATAKAI");
+            attacking = true;
+            fleeing = false;
+            move.direction = Vector3.Normalize(ani.transform.position - transform.position);
+            
+
+        }
+        target = ani;
+        
+    }
 
     
     /*
@@ -139,8 +195,8 @@ public abstract class Animal : Species, AnimalManager{
         }
         else
         {
-            walktimer = Random.Range(0, 10);
-            randomDirection = new Vector3(Random.Range(-1, 1), Random.Range(-1, 1), Random.Range(-1, 1));
+            walktimer = UnityEngine.Random.Range(0, 10);
+            randomDirection = new Vector3(UnityEngine.Random.Range(-1, 1), UnityEngine.Random.Range(-1, 1), UnityEngine.Random.Range(-1, 1));
             if (groundedSpecies) randomDirection.y = 0;
             canmove = false;
         }
@@ -154,11 +210,11 @@ public abstract class Animal : Species, AnimalManager{
         }
         else
         {
-            turntimer = Random.Range(0, 10);
+            turntimer = UnityEngine.Random.Range(0, 10);
             if (groundedSpecies)
-                randomRotation = new Vector3(0, Random.Range(-1, 1), 0);
+                randomRotation = new Vector3(0, UnityEngine.Random.Range(-1, 1), 0);
             else
-                randomRotation = new Vector3(Random.Range(-1, 1), Random.Range(-1, 1), Random.Range(-1, 1));
+                randomRotation = new Vector3(UnityEngine.Random.Range(-1, 1), UnityEngine.Random.Range(-1, 1), UnityEngine.Random.Range(-1, 1));
         }
     }
     public virtual void WanderWait()
@@ -170,11 +226,105 @@ public abstract class Animal : Species, AnimalManager{
         }
         else
         {
-            waittimer = Random.Range(0, 10);
+            waittimer = UnityEngine.Random.Range(0, 10);
             canmove = true;
         }
     }
-    
+
+
+    protected List<Animal> AlliesNearBy()
+    {
+        List<Animal> animal = new List<Animal>();
+        foreach (Species species in detected)
+        {
+            if (species.GetType().IsSubclassOf(typeof(Animal)))
+            {
+                Animal ani = species as Animal;
+                
+                if (ani.GetType() == GetType()) // same species ?
+                {
+
+                    animal.Add(ani);
+
+                }
+
+            }
+        }
+        return animal;
+    }
+    protected List<Animal> EnemiesNearBy()
+    {
+        List<Animal> animal = new List<Animal>();
+        foreach (Species species in detected)
+        {
+            if (species.GetType().IsSubclassOf(typeof(Animal)))
+            {
+                Animal ani = species as Animal;
+                if (ani.GetType() != GetType()) // same species ?
+                {
+                    if (dietaryRegime != DietaryRegime.Vegetarian)
+                    {
+
+                        animal.Add(ani);
+
+                    }
+
+                }
+
+            }
+        }
+        return animal;
+    }
+    protected List<Species> FoodNearBy()
+    {
+        List<Species> food = new List<Species>();
+        foreach (Species species in detected)
+        {
+            if (species.GetType().IsSubclassOf(typeof(Vegetal)))
+            {
+                if (dietaryRegime == DietaryRegime.Vegetarian || dietaryRegime == DietaryRegime.Omnivorus)
+                {
+                    food.Add(species);
+
+                }
+            }
+            if (species.GetType().IsSubclassOf(typeof(Animal)))
+            {
+                Animal ani = species as Animal;
+                if (ani.GetType() != GetType()) // same species ?
+                {
+                    if ((ani.dietaryRegime != DietaryRegime.Carnivorus || dietaryRegime == DietaryRegime.Omnivorus) && ani.dead)
+                    {
+                        food.Add(species);
+
+                    }
+
+                }
+
+            }
+        }
+        return food;
+    }
+
+    void AssessSituation()
+    {
+        List<Animal> enemy = EnemiesNearBy();
+        List<Animal> allies = AlliesNearBy();
+        List<Species> food = FoodNearBy();
+        if (enemy.Count > 0)
+        {
+            ReactToEnemy(enemy[0]);
+        }
+        else
+        {
+            if(food.Count > 0 && hunger > 20)
+            {
+                target = food[0];
+            }
+        }
+        
+    }
+
 
     protected void OnTriggerEnter(Collider other)
     {
@@ -182,86 +332,42 @@ public abstract class Animal : Species, AnimalManager{
         Species species = other.GetComponent<Species>();
         if (species)
         {
-            print(name + " : Theres something ...");
-            if (species.GetType().IsSubclassOf(typeof(Vegetal)))
-            {
-                if (!fleeing && !attacking) // trigger only if in normal state
-                {
-                    attacking = true;
-                    move.direction = Vector3.Normalize(species.transform.position - transform.position);
-                    target = species.gameObject;
-                }
-            }
-            if (species.GetType().IsSubclassOf(typeof(Animal)))
-            {
-                Animal ani = species as Animal;
-                if (ani.GetType() == GetType()) // same species ?
-                {
-                    // group behaviours ?
-                    print(name + " : YOU ARE MY FRIEND " + ani.name);
-                    // target assignement not needed ?
-                }
-                else
-                {
-                    print(name + ": Oh thats a " + ani.GetType());
-                    DangerEvaluation(ani);
-                    print(name + ": dangerlvl = " + dangerLvl);
-                    if (RunAway(ani)) // Jamais vu fuir pour l'instant
-                    {
-                        print(name + ": NIGEROOOOO ");
-                        attacking = false;
-                        fleeing = true;
-                        move.direction = Vector3.Normalize(transform.position - ani.transform.position ); // sens opposé
-                    }
-                    else
-                    {
-                        print(name + ": TATAKAI");
-                        attacking = true;
-                        fleeing = false;
-                        move.direction = Vector3.Normalize(ani.transform.position - transform.position); 
-
-                    }
-                    target = species.gameObject;
-                    print(name + ": target acquired -> " + target);
-                }
-                
-            }
+            detected.Add(species);
             
         }
 
     }
     protected void OnTriggerExit(Collider other)
     {
-        print(name + "wesssssssssshhhh2 " + other.name);
-        if (other.gameObject == target) // predator or prey out of range
+        Species species = other.GetComponent<Species>();
+        if (species)
         {
-            target = null;
-            attacking = false;
-            fleeing = false;
+            if (detected.Contains(species) )// predator or prey out of range
+            {
+                detected.Remove(species);
+            }
         }
+        
 
     }
 
     protected void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject == target)
+        if (target == null) return;
+        if (collision.gameObject == target.gameObject)
         {
-            if (attacking)
-            {
-                withinreach = true;
-                Attack(collision.gameObject.GetComponent<Species>());
-            }
+            
+            withinreach = true;
+            
             
         }
     }
     protected void OnCollisionExit(Collision collision)
     {
-        if (collision.gameObject == target)
+        if (target == null) return;
+        if (collision.gameObject == target.gameObject)
         {
-            if (attacking)
-            {
-                withinreach = false;
-            }
+            withinreach = false;
 
         }
     }
@@ -269,30 +375,70 @@ public abstract class Animal : Species, AnimalManager{
     
     public abstract bool RunAway(Animal animal);
     public abstract void other();
+    protected override void Death()
+    {
+        base.Death();
+        transform.Rotate(0,0,90);
+        _rb.isKinematic = true;
+        FOV.enabled = false;
+        GetComponent<BoxCollider>().isTrigger = true;
+    }
 
     protected virtual void Update()
     {
-        if(target== null)
+        if (dead) return;
+        if ((lifePoint <= 0 || longevity <= 0 || baseLifePoint <= 20) && !dead)
         {
+            Death();
+            return;
+        }
+        Developpement();
+        AssessSituation();
+        
+        if (target== null) // aucune cible
+        {
+            attacking = false;
+            fleeing = false;
+            withinreach = false;
             Wander();
         }
         else
         {
             // refresh direction
-            if (fleeing)
+            if (fleeing) // fuir la cible
             {
                 move.direction = Vector3.Normalize(transform.position - target.transform.position); // sens opposé
-            }
-            if (attacking)
-            {
-                move.direction = Vector3.Normalize(target.transform.position - transform.position);
-            }
-            if(!withinreach || fleeing)
                 move.Apply(move.direction);
+            }
+            else
+            {
+                if (attacking) // attaquer la cible
+                {
+                    if (!withinreach) // se rapprocher
+                    {
+                        move.direction = Vector3.Normalize(target.transform.position - transform.position);
+                        move.Apply(move.direction);
+                    }
+                    else // à portée
+                    {
+
+                        Attack(target);
+                    }
+
+
+                }
+                else // has target, yet don't attack or flee ?
+                {
+                    print(name + " MANAGED TO COME INSIDE THIS CONDITION");
+                    target = ChangeTarget();
+                }
+            }
+                
         }
-        
-        
+        attackCD -= Time.deltaTime;
+
     }
 
+    
 }
 
