@@ -6,16 +6,24 @@ using UnityEngine;
 public class Tree : Vegetal{
     Fruit fruit;
 
+    public Tree(){
+        //print("hello Tree");
+        
+    }
+    public void Start(){}
+
     public override Species Reproduction(Species species){
+        
         string source = "Prefabs/Trees/Tree1";
 
-        if(longevity%537 == 0){
+        if(longevity%931 == 0){
             System.Random random = new System.Random();
-            int randX = random.Next(-25,25);
-            int randY = random.Next(-25,25);
+            int randX = random.Next(-1000,1000);
+            int randY = random.Next(-1000,1000);
+            print("Instatiating " + source);
 
             Tree tree = ( (GameObject)Instantiate(Resources.Load(source), transform.position + new Vector3(randX,0,randY), new Quaternion())).GetComponent<Tree>();
-            print("LO " + longevity);
+            //print("LO " + longevity);
             tree.gameObject.transform.localScale = new Vector3(10f,10f,10f);
             return tree;
         }
@@ -23,12 +31,8 @@ public class Tree : Vegetal{
     }
 
     public override void Developpement(){
-        /*if(longevity%50 == 0){
-            transform.localScale = transform.localScale*1.01f;
-            print("GRANNNNNDEUUR");
-        }*/
         longevity--;
-        //print("LONG DEV " + longevity);
+        transform.localScale *= 1.0001f; 
     }
 
     private void Update(){

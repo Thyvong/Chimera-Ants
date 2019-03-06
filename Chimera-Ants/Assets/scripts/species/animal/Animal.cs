@@ -11,34 +11,41 @@ public abstract class Animal : Species, AnimalManager{
     public Sex sex { get; protected set; }
     public State state { get; protected set; }
     public int dangerLvl { get; protected set; }
-    
     public int animalBoidId { get; protected set; } // personal id
     public int familyBoidId { get; protected set; } // group id
     public static int familyBoidIdReference = 0;
-
     public bool isInBoid = false;
     public List<Animal> animalInBoids;
-    
+
+    //Méthode abstraite
+    public abstract void groupBehaviour();
+    public abstract void stateBehaviour();
+    public abstract void other();
 
     
 
+    //Fait
     public void SetAnimalBoidId(int id){
         animalBoidId = id;
     }
     
+    //Fait
     public void SetSex(Sex genre){
         sex = genre;
     }
    
+   //Fait
     protected void SetState(State rang){
         state = rang;
     }
 
+    //Fait
     public virtual void DangerEvaluation(Species species){
-
         if(species.GetType() == typeof(Animal)){
 			Animal animal = (Animal) species;
-			if(animal.animalBoidId != animalBoidId){ // ?? si animal is not this ??
+
+            //If it's not the same animal species
+			if(animal.animalBoidId != animalBoidId){
 				increaseDangerLvl(1);
 			}
 			if(animal.dietaryRegime != dietaryRegime){
@@ -49,102 +56,97 @@ public abstract class Animal : Species, AnimalManager{
 			}
         }
     }
+
     // Increase danger level by nblvl
+    //Fait
     protected void increaseDangerLvl(int nbLvl){
         dangerLvl = dangerLvl + nbLvl;
     }
 
+    //Fait
     public void resetDangerLvl(){
         dangerLvl = 0;
     }
 
-   public abstract void groupBehaviour();
-   public abstract void stateBehaviour();
-   
-   //public abstract bool RunAway(Animal animal);
+    //Fait
+    public bool RunAway(Animal animal){
 
-    public virtual void Start(){
-        System.Random random = new System.Random();
-        if (random.Next() % 2 == 0)
-        {
-            sex = Sex.Male;
-        }
-        else
-        {
-            sex = Sex.Female;
-        }
-        print("SEX = " + sex);
-        
-   }
-
-
-
-   public bool RunAway(Animal animal){
-
+        //If dangerLvl is high enough
         if(dangerLvl >= 3){
-            // ca rpz quoi ?
+            //The rand value represent the bluff mecanism
             System.Random random = new System.Random();
             int rand = random.Next(0,10);
 
+            //If the animal is affraid
             if(animal.dangerLvl > 3){
+                //dangerLvl decrease
                 rand -= random.Next(1,animal.dangerLvl);
             }
-
+            //If the animal is not affraid
             if(animal.dangerLvl <= 3){
+                //dangerLvl increase
                 rand += random.Next(1,animal.dangerLvl);
             }
 
             if(rand >= 5){
-                print("DANGER");
                 return true;
-            }
-                
+            }     
         }
-        print("NO DANGER");
         return false;
    	}
 
-    public abstract void other();
-
+    //Fait
     public virtual void familyBehaviour(){
-        
+        boidBehaviour();
     }
 
-    public void boidBehaviour(/*List<Animal> animals*/){
+    //Fait
+    public void boidBehaviour(){
 
         if(isInBoid == true){
             
             Animal nearestNeighbour = null;
             float minDistance = 999999999f;
-            print("Méthode Boids");
+
             foreach(Animal animal in animalInBoids){
                 
                 // Selection of the nearest neighbour
-                if( Vector3.Distance(transform.position, animal.transform.position) < minDistance ){
+                if( Vector3.Distance(transform.position, animal.transform.position) < minDistance && animal.familyBoidId == familyBoidId){
                     nearestNeighbour = animal;
                     minDistance = Vector3.Distance(transform.position, animal.transform.position);
-                    print("Selection du plus proche");
 
+                    //We come closer
                     transform.position = Vector3.MoveTowards(transform.position, nearestNeighbour.transform.position,0.1f ) ;
-                    transform.LookAt(nearestNeighbour.transform.position);//On s'approche
+                    transform.LookAt(nearestNeighbour.transform.position);
                 }
             }
             
-            if( minDistance < 3.5f ){
-                //on s'éloigne
+            if( minDistance < 3.5f){
+                //We move away
                 transform.position = Vector3.MoveTowards(transform.position, nearestNeighbour.transform.position*(-1),0.1f ) ;
-                transform.LookAt(nearestNeighbour.transform.position*(-1));//on s'éloigne 
-                print("éloignement");
+                transform.LookAt(nearestNeighbour.transform.position*(-1));
             }
+
+            //We center
             Vector3 direction = new Vector3(0,0,0);
             foreach(Animal animal in animalInBoids){
                 direction += animal.transform.forward; 
             }
             transform.LookAt(direction);
             Deplacement(direction);
-            print("Déplacement BOIDS");
         }  
+
     }
+    
+    //Fait
+    public void Attack(Species species){
+        if(species.lifePoint > 0){
+			species.TakeDamage( strength * weight );
+		}
+    }
+
+    //UNITY Methode
+    //Fait
     public void Awake(){
         GetComponent<SphereCollider>().isTrigger = true;
 
@@ -159,54 +161,50 @@ public abstract class Animal : Species, AnimalManager{
         _rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
     }
 
-    public void Attack(Species species){
-        if(species.lifePoint > 0){
-			species.TakeDamage( strength * weight );
-		}
+    //Fait
+    public virtual void Start(){
+        System.Random random = new System.Random();
+        if (random.Next() % 2 == 0){
+            sex = Sex.Male;
+        }
+        else{
+            sex = Sex.Female;
+        }
     }
 
-    private void OnTriggerEnter(Collider other){
-
-        if(other.gameObject.GetComponent<Animal>() != null){
-            animalInBoids.Add(other.gameObject.GetComponent<Animal>());
-            print("ajout - Animal OnTriggrEnter");
-        }
-
+    //Fait
+    public void OnTriggerEnter(Collider other){
         
+        //If the gameObject is an animal
+        if(other.gameObject.GetComponent<Animal>() != null){
 
-        /* mettre à true isInBoid
-           puis mettre comportement boid dans familyBehaviour
-           puis dans ontriggerEnter appeler familyBehaviour
-           mettre dans update si tab animals non vide alors isInBoids = true
-        */
-
-
+            //If the animals belongs to the same family
+            if(other.gameObject.GetComponent<Animal>().familyBoidId == familyBoidId){
+                //Add to the list
+                animalInBoids.Add(other.gameObject.GetComponent<Animal>());
+            }
+        }
 	}
 	
 	private void OnTriggerExit(Collider other){
-
+        
+        //If the animal leaves the trigger
         if(other.gameObject.GetComponent<Animal>() != null){
+            //Remove the animal to the list
             animalInBoids.Remove(other.gameObject.GetComponent<Animal>());
-            print("Suppression - animal ontriggerexit");
         }
 	}
 
     public virtual void Update(){
-        
+        Developpement();
+        //If isInBoid = true boidBehaviour is active 
         if(animalInBoids != null){
             isInBoid = true;
-            print("Update - isInBoid == true");
         }
         else{
             isInBoid = false;
-            print("Update- isInBoid == false");
         }
-        boidBehaviour();
-        print("UPDATE ANIMAL");
-
-        
-        
+        familyBehaviour();
     }
-
 
 }

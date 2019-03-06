@@ -16,32 +16,13 @@ public abstract class Species : Element, SpeciesManager{
     public int hunger { get; protected set; } //time indicator which mesure the time spent without eating
 
     public float visionRange { get; protected set; }
-
     protected Rigidbody _rb;
 
-
-    //private static int speciesBoidIdReference = 0;
-    //protected int spiecesBoidId;
-    /* protected void Awake()
-    {
-        _rb = gameObject.AddComponent<Rigidbody>();
-        _rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
-        _rb.mass = weight;
-        _rb.drag = 5;
-        _rb.angularDrag = weight / 10.0f;
-        _rb.isKinematic = false;
-        _rb.useGravity = true;
-        _rb.interpolation = RigidbodyInterpolation.Interpolate;
-        _rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-
-        if( GetType() == typeof(ChimeraAnt)){
-            print("Awake !!!! ");
-        }
-    }*/
+    //À modifier dans classe fille
     protected Species(){
 
         // initialisé ici, mais dans le futur, fait cas par cas
-        longevity = 5000;
+        longevity = 500;
         strength = 1;
         weight = 10;
         lifePoint = 100;
@@ -53,25 +34,31 @@ public abstract class Species : Element, SpeciesManager{
         visionRange = 5f;
     }
     
+    //Méthode ABSTRAITE---------
     public abstract Species Reproduction(Species species);
 
+    //Fait
     public virtual void Drink(){}
 
+
+    //Méthode concrete
+
+    //Fait
     public virtual void Feed(Species species){
         if(lifePoint <= baseLifePoint-10){
             RestoreLifePoints();
             hunger = 0;
-            species.Death();
             Destroy(species);
-            print("EAT !! ");
-        }
-        
+        } 
     }
 
+
+    //Fait
     protected void RestoreLifePoints(){
-        lifePoint=baseLifePoint;
-        
+        lifePoint=baseLifePoint;    
     }
+
+    //Fait
     public float TakeDamage(float damage)
     {
         float totalDamage = damage / resistance * weight;
@@ -79,11 +66,14 @@ public abstract class Species : Element, SpeciesManager{
         return totalDamage;
     }
 
+    //Fait
     protected virtual void Deplacement(Vector3 direction){
         transform.LookAt(transform.position + direction);
         _rb.MovePosition(transform.position + transform.forward * speed * Time.deltaTime);
     }
     
+
+    //Fait
     public virtual void Developpement()
     {
         Death();
@@ -102,38 +92,18 @@ public abstract class Species : Element, SpeciesManager{
 			baseLifePoint += 0.1f;
             resistance += 1f;
 		}
-
-        /*print("base life point " + baseLifePoint);
-        print("life point " + lifePoint);
-        print("hunger " + hunger);*/
     }
 
+    //Fait
     protected void Death()
     {
         if (/* lifePoint <= 0 || */ longevity <= 0 /* || baseLifePoint <= 20*/)
         {
-            print("death");
             Destroy(gameObject);
         }
     }
-    //protected setSpiecesBoidReference    
 
-    private void OnTriggerEnter(Collider other){
-
-	}
-
-	private void OnTriggerStay(Collider other){
-		
-	}
-	
-	private void OnTriggerExit(Collider other){
-		//print("collision exit");
-	}
-
-    private void Update(){
+    protected void Update(){
         Developpement();
     }
-
-    
-
 }

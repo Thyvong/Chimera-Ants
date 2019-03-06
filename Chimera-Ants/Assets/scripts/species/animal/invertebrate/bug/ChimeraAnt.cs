@@ -11,29 +11,42 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
     // à mettre dans chimeraantmanager
     private static Dictionary<string, int> _geneticalProgress;
 	
-	private new static int familyBoidIdReference = 0;
+	
     private bool _isKingBorn = false;
 
-    //Constructor FAIT
+    //Constructor FAIT 
     public override void Start()
 	{
-        /*System.Random random = new System.Random();
-        if (random.Next() % 2 == 0)
-        {
-            sex = Sex.Male;
-        }
-        else
-        {
-            sex = Sex.Female;
-        }*/
+		base.Start();
+
 		if(status == ChimeraAntClass.King){
 			sex = Sex.Male;
 		}
 
+		if(familyBoidIdReference == 0){
+			familyBoidId = 0;
+		}
+		//Chimera Ant Id
         SetAnimalBoidId(0);
-		resistance = 1000;
+
+		speciesGenomes = new Species[10];
+		speciesGenomes[0] = new Tree();
+
+
 		longevity = longevity * 15f;
-		weight = 150 * 0.000000001f;
+        strength = 1;
+        weight = 150 * 0.000000001f;
+
+        lifePoint = 100;
+        baseLifePoint = 100;
+
+        resistance = 1000;
+        lifeStyle = LifeStyle.Settled;
+        speed = 1;
+        hunger = 0;
+        visionRange = 5f;
+
+		print("status " + status + " family boid id" + familyBoidId);
 	}
     
     // Species method
@@ -45,7 +58,8 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 
 	//FAIT
     private ChimeraAnt SpawnChildren()
-    {
+    {	
+		ChimeraAntClass rang = ChimeraAntClass.Worker;
 		int familyId = familyBoidId;
 
         if (status != ChimeraAntClass.Queen) return null;
@@ -53,64 +67,99 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
         string source = "Prefabs/";
 
         // Last part of Queen's life : Give birth to the future King
-        if (longevity <= 20000 && !_isKingBorn)
+        if (longevity <= 2000 && !_isKingBorn)
         {
+			//if it's a king we set a new family boid id
             source += "AntKing";
             _isKingBorn = true;
-			familyBoidIdReference++;
-
-			familyId = familyBoidIdReference;
+			Animal.familyBoidIdReference++;
+			familyId = Animal.familyBoidIdReference;
+			rang = ChimeraAntClass.King;
         }
         else
         {
             // Middle part of Queen's life : Give birth to the future King Guard
-            if (longevity <= 37500 && !_isKingBorn)
+            if (longevity <= 3750 && !_isKingBorn)
             {
                 source += "AntKingGuard";
+				rang = ChimeraAntClass.KingGuard;
             }
             else
             {
                 // First and default part of Queen's life : Give birth to the colony
                 
                 System.Random random = new System.Random();
-                    
                 if (random.Next() % 2 == 0)
                 {
                     source += "AntWorker";
+					rang = ChimeraAntClass.Worker;
                 }
                 else
                 {
                     source += "AntSoldier";
+					rang = ChimeraAntClass.Soldier;
                 }        
             }
         }
-        print("Instatiating " + source);
+		
         ChimeraAnt go =( (GameObject)Instantiate(Resources.Load(source), transform.position - transform.forward, new Quaternion())).GetComponent<ChimeraAnt>();
 		go.familyBoidId = familyId;
+		go.status = rang;
         return go;
     }
 
 	//FAIT
-    private new void Developpement(){
+    public override void Developpement(){
 		base.Developpement();
+		//speciesGenomes[0].Developpement();
 		//longevity equivalent of 15 years
 		longevity --;
-
 	}
 
-	//Fait
+	//Fait -Méthode à supprimer 
     public override Species Reproduction(Species species){
-		print("Appel reproduction chimera ant");
-
+		//print("Appel reproduction chimera ant");
         /* La reine n'a pas besoin de roi pour spawner des enfants, alors pourquoi cette méthode ? */
-
 		if(species.GetType() == typeof(ChimeraAnt)){
-
+			//speciesGenomesReproduction();
+			print("Nous somme ici ?");
             return SpawnChildren();
-            
 		}
 		return null;
     }
+
+
+	//Factory en fonction des différent animaux
+	public void ChimeraReproduction(Species species){
+		if(species.GetType() == typeof(Tree)){
+			
+			if(longevity%255 != 0) return ;
+		
+			System.Random random = new System.Random();
+			string source = "Prefabs/";
+			int rand = random.Next();
+
+			ChimeraAntClass rang = ChimeraAntClass.Worker;
+			int familyId = familyBoidId;
+			
+			if(rand%7 == 0){
+				source += "AntWorker";
+			}
+			else{
+				source += "AntSoldier";
+			}
+
+			
+			int randX = random.Next(-25,25);
+			int randY = random.Next(-25,25);
+
+
+			print("Naissance mode Arbre ");
+			ChimeraAnt antChild = ( (GameObject)Instantiate(Resources.Load(source), transform.position + new Vector3(randX,0,randY), new Quaternion())).GetComponent<ChimeraAnt>();
+			print("Naissance mode arbre - " + antChild.gameObject.name);
+		}
+		
+	}
 
 	//FAIT
 	private void QueenModeActivation(ChimeraAnt cAnt){
@@ -120,7 +169,7 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 			if(cAnt.sex == Sex.Female){
 				cAnt.status = ChimeraAntClass.Queen;
 				print("PONDEUSE !!!");
-				Destroy(gameObject);
+				//Destroy(gameObject);
 			}
 		}
 	}
@@ -132,7 +181,23 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 	}
     public override void Drink(){}
     public override void groupBehaviour(){}
-   	public override void familyBehaviour(){}
+   	public override void familyBehaviour(){
+		base.familyBehaviour();
+
+		if(status == ChimeraAntClass.Worker){
+			Deplacement(new Vector3(-3f,0f,0f));
+		}
+
+		if(status == ChimeraAntClass.Soldier){
+			Deplacement(new Vector3(3f,0f,0f));
+		}
+
+		if(status == ChimeraAntClass.KingGuard){
+			Deplacement(new Vector3(0f,2f,0f));
+		}
+
+		
+	}
 
    	public override void stateBehaviour(){
 		if(this.status == ChimeraAntClass.Queen || this.status == ChimeraAntClass.King){
@@ -141,7 +206,7 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 		else{
 			state  = State.Follower;
 		}
-		print("Status - State = " + status + " " + state);
+		//print("Status - State = " + status + " " + state);
    	}
 
 	//A faire remonter dans Animal FAIT
@@ -168,64 +233,37 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
             }
 		}
 	}
-   	
-	//A faire dans Animal
-	/* public override void Attack(Species species)
-    {
-		if(species.lifePoint > 0){
-			species.TakeDamage( strength * weight );
-		}
-	}*/
-	
-	/* public Species feedQueen(Species spieces){
-
-	}*/
-
-	//A faire dans Animal
-    // Qui runaway ? la chimera ant ou l'animal ? FAIT
-	/*public override bool RunAway(Animal animal){
-
-		if(dangerLvl >= 3){
-            // ca rpz quoi ?
-			System.Random random = new System.Random();
-            int rand = random.Next(0,10);
-
-			if(animal.dangerLvl > 3){
-				rand -= random.Next(1,animal.dangerLvl);
-			}
-
-			if(animal.dangerLvl <= 3){
-				rand += random.Next(1,animal.dangerLvl);
-			}
-
-			if(rand >= 5){
-				print("DANGER");
-				return true;
-			}
-			
-		}
-		print("NO DANGER");
-   		return false;
-   	}*/
 	   
    	public override void other(){}
-    //Chimera-ants special method
+
+	//Mettre comportement évolution génétique
     public void geneticalEvolution(){}
 
 	public override void Update(){
-		//base.Update();
-		Developpement();
-        if (longevity%100 == 0){
+		base.Update();
+		//Developpement();
+		//print("Longev = "  + longevity);
+		
+
+        if (longevity%300 == 0){
 			SpawnChildren();
+
+			if(status == ChimeraAntClass.King){
+				print("family Boid Id =" + familyBoidId);
+			}
+				//ChimeraReproduction(speciesGenomes[0]);
+			
 		}
+		
+
 		Vector3 randDirection;
 		System.Random random = new System.Random();
-		randDirection = new Vector3( 1,0,1 ) ;
+		randDirection = new Vector3( -13,0,7 ) ;
 		if(longevity%200 == 0){
 			
 			if(state == State.Leader){
 				randDirection = new Vector3( random.Next(-20,20), 0, random.Next(-20,20));
-				print("Changement DIRECTION");
+				//print("Changement DIRECTION");
 			}
 		}
 		Deplacement(randDirection);
@@ -233,10 +271,10 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 		
 	}
 
-	/*private void OnTriggerEnter(Collider other){
+	private void OnTriggerEnter(Collider other){
 
-		if(other.GetComponent(typeof(ChimeraAnt)).GetType() == typeof(ChimeraAnt)){
-			QueenModeActivation( (ChimeraAnt) other.GetComponent(typeof(ChimeraAnt)) );
+		if(other.gameObject.GetComponent<ChimeraAnt>() != null){
+			QueenModeActivation( other.gameObject.GetComponent<ChimeraAnt>() );
 		}
-	}*/
+	}
 }
