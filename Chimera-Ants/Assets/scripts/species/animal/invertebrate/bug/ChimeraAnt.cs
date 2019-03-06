@@ -6,7 +6,8 @@ using UnityEngine;
 public class ChimeraAnt : Bug, ChimeraAntManager{
 
     public ChimeraAntClass status;
-    private Species[] speciesGenomes;
+    public Species foodForQueen;
+    public ChimeraAnt queen;
 
     // à mettre dans chimeraantmanager
     private static Dictionary<string, int> _geneticalProgress;
@@ -86,7 +87,7 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
         ChimeraAnt go =( (GameObject)Instantiate(Resources.Load(source), transform.position - transform.forward, new Quaternion())).GetComponent< ChimeraAnt>();
         print("Transmitting movement ");
         ((ChimeraAntMove)move).InheritMovement((ChimeraAntMove)go.move); // transmitting queen's movement qualities to newborn
-        
+        go.queen = this;
         return go;
     }
 
@@ -124,10 +125,7 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 		}
 	}
     
-	public override void Feed(Species species){
-	    base.Feed(species);
-		
-	}
+	
     public override void Drink(){}
     public override void groupBehaviour(){}
    	public override void familyBehaviour(){}
@@ -167,10 +165,73 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
             }
 		}
 	}
-   	
-	/* public Species feedQueen(Species spieces){
 
-	}*/
+    private void Absorb(Species species)
+    {
+        if(status == ChimeraAntClass.Queen)
+        {
+            longevity += species.longevity /5;
+            weight += species.weight/5;
+            baseLifePoint += species.baseLifePoint / 5;
+            resistance += species.resistance / 5;
+            
+            visionRange += species.visionRange / 5;
+            Animal animal = species as Animal;
+            if (animal)
+            {
+                strength += animal.strength / 5;
+                attackSpeed += animal.attackSpeed / 5;
+                ((ChimeraAntMove)move).AddMovement(animal.move);
+            }
+            
+        }
+    }
+    public override void Feed(Species species)
+    {
+        if(status == ChimeraAntClass.Queen)
+        {
+            if (lifePoint <= baseLifePoint - 10)
+            {
+                RestoreLifePoints();
+                Absorb(species);
+                species.Eaten();
+                print("EAT !! ");
+            }
+            hunger = 0;
+
+        }
+        if(status == ChimeraAntClass.Worker)
+        {
+            if (hunger > 70 )
+            {
+                print("WTFFFFFF");
+                base.Feed(species);
+            }
+            else
+            {
+                foodForQueen = species;
+                species.GetComponent<BoxCollider>().enabled = false;
+                species.GetComponent<SphereCollider>().enabled = false;
+                species.GetComponent<Rigidbody>().freezeRotation = true;
+                species.transform.position = transform.position + transform.up;
+                species.transform.parent = transform;
+
+            }
+        }
+        if(status != ChimeraAntClass.Worker && status != ChimeraAntClass.Queen)
+        {
+            print("ihnooooooooooooo");
+            base.Feed(species);
+        }
+        
+
+    }
+    public void FeedQueen(ChimeraAnt queen){
+        if (queen.status != ChimeraAntClass.Queen) return;
+        if (foodForQueen == null) return;
+        queen.Feed(foodForQueen);
+        foodForQueen = null;
+	}
     
     // Qui runaway ? la chimera ant ou l'animal ? FAIT
 	public override bool RunAway(Animal animal){
@@ -205,6 +266,25 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 
 	protected override void Update(){
         base.Update();
+        if (target)
+        {
+            if (target.transform.parent)
+            {
+                target = null;
+                feeding = false;
+            }
+        }
+        if (foodForQueen)
+        {
+            Vector3 dir = queen.transform.position - transform.position;
+            move.direction = Vector3.Normalize(dir);
+            move.Apply(move.direction);
+            foodForQueen.transform.localPosition = new Vector3(0, 1, 0);
+            if (Vector3.Distance(queen.transform.position, transform.position) < 2)
+            {
+                FeedQueen(queen);
+            }
+        }
         if(Input.GetMouseButtonDown(0))
         {
             if (status == ChimeraAntClass.Queen)

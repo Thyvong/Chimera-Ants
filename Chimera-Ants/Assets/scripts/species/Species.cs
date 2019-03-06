@@ -16,7 +16,7 @@ public abstract class Species : Element, SpeciesManager{
 
     public bool dead = false;
 
-    public float hunger { get; protected set; } //time indicator which mesure the time spent without eating (0 = not hungry)
+    public float hunger;// { get; protected set; } //time indicator which mesure the time spent without eating (0 = not hungry)
 
     public float visionRange { get; protected set; }
 
@@ -108,7 +108,7 @@ public abstract class Species : Element, SpeciesManager{
         }
     }
     // call when predator eat species
-    protected void Eaten()
+    public void Eaten()
     {
         Destroy(gameObject);
     }

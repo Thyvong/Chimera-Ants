@@ -24,12 +24,12 @@ public abstract class Animal : Species, AnimalManager{
 
     
 
-    protected Movement move;
+    public Movement move;
     
     /* Detection */
     protected SphereCollider FOV; // périmètre de détection, must be IsTrigger
     private List<GameObject> detected; // espèces dans le périmètre de détection
-    private Species target;
+    protected Species target;
     public bool fleeing = false, attacking = false, feeding = false;
     public bool withinreach = false;
 
@@ -49,7 +49,6 @@ public abstract class Animal : Species, AnimalManager{
         attackSpeed = 1;
         detected = new List<GameObject>();
     }
-
     protected override void Awake()
     {
         base.Awake();
@@ -345,9 +344,12 @@ public abstract class Animal : Species, AnimalManager{
     protected void OnTriggerEnter(Collider other)
     {
         if (dead) return;
+        if (other.transform.parent) return;
+        if (other is SphereCollider) return;
         Species species = other.gameObject.GetComponent<Species>();
         if (species)
         {
+
             if (!detected.Contains(other.gameObject))// predator or prey out of range
             {
                 detected.Add(other.gameObject);
@@ -372,6 +374,7 @@ public abstract class Animal : Species, AnimalManager{
     protected void OnTriggerExit(Collider other)
     {
         if (dead) return;
+        if (other is SphereCollider) return;
         Species species = other.gameObject.GetComponent<Species>();
         if (species)
         {
@@ -427,7 +430,7 @@ public abstract class Animal : Species, AnimalManager{
         List<GameObject> cleanup = new List<GameObject>();
         foreach(GameObject obj in detected)
         {
-            if(obj != null)
+            if(obj != null && obj.transform.parent == null)
             {
                 cleanup.Add(obj);
             }
