@@ -28,7 +28,7 @@ public abstract class Animal : Species, AnimalManager{
     
     /* Detection */
     protected SphereCollider FOV; // périmètre de détection, must be IsTrigger
-    private List<Species> detected; // espèces dans le périmètre de détection
+    private List<GameObject> detected; // espèces dans le périmètre de détection
     private Species target;
     public bool fleeing = false, attacking = false, feeding = false;
     public bool withinreach = false;
@@ -47,7 +47,7 @@ public abstract class Animal : Species, AnimalManager{
         strength = 100;
         lifeStyle = LifeStyle.Settled;
         attackSpeed = 1;
-        detected = new List<Species>();
+        detected = new List<GameObject>();
     }
 
     protected override void Awake()
@@ -237,8 +237,9 @@ public abstract class Animal : Species, AnimalManager{
     protected List<Animal> AlliesNearBy()
     {
         List<Animal> animal = new List<Animal>();
-        foreach (Species species in detected)
+        foreach (GameObject obj in detected)
         {
+            Species species = obj.GetComponent<Species>();
             if (species.GetType().IsSubclassOf(typeof(Animal)))
             {
                 Animal ani = species as Animal;
@@ -257,8 +258,9 @@ public abstract class Animal : Species, AnimalManager{
     protected List<Animal> EnemiesNearBy()
     {
         List<Animal> animal = new List<Animal>();
-        foreach (Species species in detected)
+        foreach (GameObject obj in detected)
         {
+            Species species = obj.GetComponent<Species>();
             if (species.GetType().IsSubclassOf(typeof(Animal)))
             {
                 Animal ani = species as Animal;
@@ -280,8 +282,9 @@ public abstract class Animal : Species, AnimalManager{
     protected List<Species> FoodNearBy()
     {
         List<Species> food = new List<Species>();
-        foreach (Species species in detected)
+        foreach (GameObject obj in detected)
         {
+            Species species = obj.GetComponent<Species>();
             if (species.GetType().IsSubclassOf(typeof(Vegetal)))
             {
                 if (dietaryRegime == DietaryRegime.Vegetarian || dietaryRegime == DietaryRegime.Omnivorus)
@@ -342,12 +345,12 @@ public abstract class Animal : Species, AnimalManager{
     protected void OnTriggerEnter(Collider other)
     {
         if (dead) return;
-        Species species = other.GetComponent<Species>();
+        Species species = other.gameObject.GetComponent<Species>();
         if (species)
         {
-            if (!detected.Contains(species))// predator or prey out of range
+            if (!detected.Contains(other.gameObject))// predator or prey out of range
             {
-                detected.Add(species);
+                detected.Add(other.gameObject);
                 AssessSituation();
             }
         }
@@ -369,13 +372,12 @@ public abstract class Animal : Species, AnimalManager{
     protected void OnTriggerExit(Collider other)
     {
         if (dead) return;
-        Species species = other.GetComponent<Species>();
+        Species species = other.gameObject.GetComponent<Species>();
         if (species)
         {
-            if (target != species) print(species + "WOW yes "+ target);
-            if (detected.Contains(species) )// predator or prey out of range
+            if (detected.Contains(other.gameObject) )// predator or prey out of range
             {
-                detected.Remove(species);
+                detected.Remove(other.gameObject);
                 print(name + " : detection list is -" + detected.Count);
                 print(name + " : removing " + species.name + " from detection");
                 AssessSituation();
@@ -396,7 +398,7 @@ public abstract class Animal : Species, AnimalManager{
             if (feeding)
             {
                 print(name + " : LETS EAT " + target.name);
-                detected.Remove(target);
+                detected.Remove(target.gameObject);
                 Feed(target);
                 
                 feeding = false;
@@ -422,12 +424,12 @@ public abstract class Animal : Species, AnimalManager{
     }
     protected void UpdateDetected()
     {
-        List<Species> cleanup = new List<Species>();
-        foreach(Species species in detected)
+        List<GameObject> cleanup = new List<GameObject>();
+        foreach(GameObject obj in detected)
         {
-            if(species != null)
+            if(obj != null)
             {
-                cleanup.Add(species);
+                cleanup.Add(obj);
             }
         }
         detected = cleanup;
@@ -471,13 +473,16 @@ public abstract class Animal : Species, AnimalManager{
                 List<Species> food = FoodNearBy();
                 if (food.Count != 0)
                 {
-                    print(name + " : found " + food[0]);
-                    target = food[0];
-                    feeding = true;
-                    move.direction = target.transform.position - transform.position;
-                    print(name + " : Oh i need food, here is some - " + target.name );
+                    if (food[0])
+                    {
+                        print(name + " : found " + food[0]);
+                        target = food[0];
+                        feeding = true;
+                        move.direction = target.transform.position - transform.position;
+                        print(name + " : Oh i need food, here is some - " + target.name);
+                    }
+                    
                 }
-                return;
             }
             Wander();
         }

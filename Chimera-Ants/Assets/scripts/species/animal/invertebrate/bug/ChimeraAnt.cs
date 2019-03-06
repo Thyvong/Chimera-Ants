@@ -181,11 +181,11 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
             int rand = random.Next(0,10);
 
 			if(animal.dangerLvl > 3){
-				rand -= random.Next(1,animal.dangerLvl);
+				rand -= random.Next(0,animal.dangerLvl);
 			}
 
 			if(animal.dangerLvl <= 3){
-				rand += random.Next(1,animal.dangerLvl);
+				rand += random.Next(0,animal.dangerLvl);
 			}
 
 			if(rand >= 5){
