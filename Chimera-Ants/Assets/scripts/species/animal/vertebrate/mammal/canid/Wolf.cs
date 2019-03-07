@@ -83,6 +83,7 @@ public class Wolf : Canid{
 			weight = 15;
 			transform.localScale = new Vector3(10f,10f,10f);
 		}
+		print("RaaaH");
 
 		familyBoidIdReference++;
         familyBoidId = Animal.familyBoidIdReference;

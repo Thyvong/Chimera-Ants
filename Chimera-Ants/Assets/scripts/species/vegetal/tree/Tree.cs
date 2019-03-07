@@ -10,7 +10,9 @@ public class Tree : Vegetal{
         //print("hello Tree");
         
     }
-    public void Start(){}
+    public void Start(){
+        print("ROOOH");
+    }
 
     public override Species Reproduction(Species species){
         

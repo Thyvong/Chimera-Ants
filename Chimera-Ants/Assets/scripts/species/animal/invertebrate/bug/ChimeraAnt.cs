@@ -6,7 +6,7 @@ using UnityEngine;
 public class ChimeraAnt : Bug, ChimeraAntManager{
 
     public ChimeraAntClass status;
-    private Species[] speciesGenomes;
+    private Genomes[] speciesGenomes;
 
     // à mettre dans chimeraantmanager
     private static Dictionary<string, int> _geneticalProgress;
@@ -30,9 +30,10 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 		//Chimera Ant Id
         SetAnimalBoidId(0);
 
-		speciesGenomes = new Species[10];
-		speciesGenomes[0] = new Tree();
-		speciesGenomes[1] = new Wolf();
+		speciesGenomes = new Genomes[10];
+		speciesGenomes[0] = Genomes.Tree;
+		speciesGenomes[1] = Genomes.Wolf;
+		print("Hello c'est moi");
 
 
 		longevity = longevity * 15f;
@@ -48,7 +49,6 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
         hunger = 0;
         visionRange = 5f;
 
-		//print("status " + status + " family boid id" + familyBoidId);
 	}
     
     // Species method
@@ -138,7 +138,7 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 
 
 	//Factory en fonction des différent animaux
-	public void ChimeraReproduction(Species species){
+	public void ChimeraReproduction(Genomes gene){
 		
 		string source = "Prefabs/";
 
@@ -155,32 +155,31 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 		}
 
 		
-		if(species.GetType() == typeof(Tree)){
+		if(gene == Genomes.Tree){
 			
-			if(longevity%255 != 0) return ;
+			if(longevity%200 != 0) return ;
 
 			int familyId = familyBoidId;
 			
-			int randX = random.Next(-100,100);
-			int randY = random.Next(-100,100);
+			int randX = random.Next(-10,10);
+			int randY = random.Next(-10,10);
 			print("nAISSANCE mode arbre");
 			ChimeraAnt antChild = ( (GameObject)Instantiate(Resources.Load(source), transform.position + new Vector3(randX,0,randY), new Quaternion())).GetComponent<ChimeraAnt>();
 		}
 		
-		if(species.GetType() == typeof(Wolf)){
+		if(gene == Genomes.Wolf){
 			
+			//Wolf wolfFather = (Wolf) species;
 
-			Wolf wolfFather = (Wolf) species;
-
-			if (state != State.Leader || wolfFather.state != State.Leader) return ;
+			if (state != State.Leader /*|| wolfFather.state != State.Leader*/) return ;
 
 			if (isInReproductionTime == false) return ;
 
-			int familyId = wolfFather.familyBoidId;
+			int familyId = familyBoidId;
 
 			print("Naissance mode Loup");
 			ChimeraAnt antChild =( (GameObject)Instantiate(Resources.Load(source), transform.position - transform.forward*(-1.5f), new Quaternion())).GetComponent<ChimeraAnt>();
-
+			antChild.familyBoidId = familyId;
 		}
 	}
 
@@ -220,7 +219,7 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 		}
 
 		//wolf behaviour
-		if(longevity > 1000 || longevity %600 == 0 || longevity < 7000){
+		if(longevity > 1000 && longevity %600 == 0 && longevity < 7000){
 			isInReproductionTime = true;
 		} 
 		else{
@@ -277,9 +276,13 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 			SpawnChildren();			
 		}		
 
-		foreach(Species s in speciesGenomes){
-			if(s != null){
-				ChimeraReproduction(s);
+		for(int genomeIndex = 0; genomeIndex < speciesGenomes.Length; genomeIndex++){
+			if(speciesGenomes[genomeIndex] != null){
+				ChimeraReproduction(speciesGenomes[genomeIndex]);
+				print("Pas null");
+			}
+			else{
+				print("c'est null");
 			}
 			
 		}

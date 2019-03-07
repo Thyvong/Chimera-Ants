@@ -8,7 +8,7 @@ public abstract class Animal : Species, AnimalManager{
     public NutritionStyle[] nutritionStyle { get; protected set; }
     public GroupStyle[] groupStyle { get; protected set; }
     public DietaryRegime dietaryRegime { get; protected set; }
-    public Sex sex { get; set; }
+    public Sex sex; // { get; set; }
 
     protected bool isInReproductionTime = false;
     public State state { get; protected set; }
@@ -116,13 +116,14 @@ public abstract class Animal : Species, AnimalManager{
             foreach(Animal animal in animalInBoids){
                 
                 // Selection of the nearest neighbour
-                if( Vector3.Distance(transform.position, animal.transform.position) < minDistance && animal.familyBoidId == familyBoidId /*&& RunAway(animal) == false*/){
+                if( Vector3.Distance(transform.position, animal.transform.position) < minDistance && animal.familyBoidId == familyBoidId && minDistance > 3.5f ){
                     nearestNeighbour = animal;
                     minDistance = Vector3.Distance(transform.position, animal.transform.position);
 
                     //We come closer
                     transform.position = Vector3.MoveTowards(transform.position, nearestNeighbour.transform.position,0.1f ) ;
                     transform.LookAt(nearestNeighbour.transform.position);
+                    print("On s'approche");
                 }
             }
             
@@ -130,6 +131,7 @@ public abstract class Animal : Species, AnimalManager{
                 //We move away
                 transform.position = Vector3.MoveTowards(transform.position, nearestNeighbour.transform.position*(-1),0.1f ) ;
                 transform.LookAt(nearestNeighbour.transform.position*(-1));
+                print("On s'éloigne");
             }
 
             //We center
@@ -190,23 +192,28 @@ public abstract class Animal : Species, AnimalManager{
 
     //Fait
     public void OnTriggerEnter(Collider other){
-        
+        print("On trigger enter");
         //If the gameObject is an animal
         if(other.gameObject.GetComponent<Animal>() != null){
 
             //If the animals belongs to the same family
             if(other.gameObject.GetComponent<Animal>().familyBoidId == familyBoidId){
-                //Add to the list
-                animalInBoids.Add(other.gameObject.GetComponent<Animal>());
+
+                if( animalInBoids.Contains(other.gameObject.GetComponent<Animal>()) == false){
+                        //Add to the list
+                        print("add");
+                        animalInBoids.Add(other.gameObject.GetComponent<Animal>());
+                }                
             }
         }
 	}
 	
-	private void OnTriggerExit(Collider other){
+	public void OnTriggerExit(Collider other){
         
         //If the animal leaves the trigger
         if(other.gameObject.GetComponent<Animal>() != null){
             //Remove the animal to the list
+            print("remove");
             animalInBoids.Remove(other.gameObject.GetComponent<Animal>());
 
             
@@ -235,6 +242,7 @@ public abstract class Animal : Species, AnimalManager{
                 if(state == State.Leader){
                     direction = new Vector3( random.Next(-200,200), 0, random.Next(-200,200));
                     Deplacement(direction);
+                    print("nouvelle direction = " + direction);
                 }
             }
 
