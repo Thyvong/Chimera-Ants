@@ -6,7 +6,7 @@ using UnityEngine;
 public class ChimeraAnt : Bug, ChimeraAntManager{
 
     public ChimeraAntClass status;
-    private Genomes[] speciesGenomes;
+    private List<Genomes> speciesGenomes;
 
     // à mettre dans chimeraantmanager
     private static Dictionary<string, int> _geneticalProgress;
@@ -30,9 +30,9 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 		//Chimera Ant Id
         SetAnimalBoidId(0);
 
-		speciesGenomes = new Genomes[10];
-		speciesGenomes[0] = Genomes.Tree;
-		speciesGenomes[1] = Genomes.Wolf;
+		speciesGenomes = new List<Genomes>();
+		speciesGenomes.Add(Genomes.Tree);
+		speciesGenomes.Add(Genomes.Wolf);
 		print("Hello c'est moi");
 
 
@@ -157,7 +157,7 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 		
 		if(gene == Genomes.Tree){
 			
-			if(longevity%200 != 0) return ;
+			if(longevity%977 != 0) return ;
 
 			int familyId = familyBoidId;
 			
@@ -168,10 +168,8 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 		}
 		
 		if(gene == Genomes.Wolf){
-			
-			//Wolf wolfFather = (Wolf) species;
 
-			if (state != State.Leader /*|| wolfFather.state != State.Leader*/) return ;
+			if (state != State.Leader) return ;
 
 			if (isInReproductionTime == false) return ;
 
@@ -199,6 +197,13 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 	protected override void Feed(Species species){
 		if(species.GetType() == typeof(Animal) || species.GetType() == typeof(Vegetal)){
 			base.Feed(species);
+
+			if(species.GetType() == typeof(Tree) && speciesGenomes.Contains(Genomes.Tree)){
+				speciesGenomes.Add(Genomes.Tree);
+			}
+			if(species.GetType() == typeof(Wolf) && speciesGenomes.Contains(Genomes.Wolf)){
+				speciesGenomes.Add(Genomes.Tree);
+			}
 		}
 	}
     public override void Drink(){}
@@ -224,8 +229,7 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 		} 
 		else{
 			   isInReproductionTime = false;
-		   }
-		
+		}
 	}
 
    	public override void stateBehaviour(){
@@ -276,9 +280,9 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 			SpawnChildren();			
 		}		
 
-		for(int genomeIndex = 0; genomeIndex < speciesGenomes.Length; genomeIndex++){
-			if(speciesGenomes[genomeIndex] != null){
-				ChimeraReproduction(speciesGenomes[genomeIndex]);
+		foreach(Genomes g in speciesGenomes){
+			if(g != null){
+				ChimeraReproduction(g);
 				print("Pas null");
 			}
 			else{
