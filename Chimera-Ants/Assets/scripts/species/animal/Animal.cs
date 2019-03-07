@@ -19,7 +19,7 @@ public abstract class Animal : Species, AnimalManager{
     public int dangerLvl { get; protected set; }
     
     public int animalBoidId { get; protected set; } // personal id
-    public int familyBoidId { get; protected set; } // group id
+    public int familyBoidId { get;  set; } // group id
     public static int familyBoidIdReference = 0;
 
     
@@ -28,7 +28,7 @@ public abstract class Animal : Species, AnimalManager{
     
     /* Detection */
     protected SphereCollider FOV; // périmètre de détection, must be IsTrigger
-    private List<GameObject> detected; // espèces dans le périmètre de détection
+    protected List<GameObject> detected; // espèces dans le périmètre de détection
     protected Species target;
     public bool fleeing = false, attacking = false, feeding = false;
     public bool withinreach = false;
@@ -44,7 +44,7 @@ public abstract class Animal : Species, AnimalManager{
 
     protected Animal() : base()
     {
-        strength = 100;
+        strength = 1000;
         lifeStyle = LifeStyle.Settled;
         attackSpeed = 1;
         detected = new List<GameObject>();
@@ -66,7 +66,7 @@ public abstract class Animal : Species, AnimalManager{
         sex = genre;
     }
    
-    protected void SetState(State rang){
+    public void SetState(State rang){
         state = rang;
     }
 
@@ -124,9 +124,7 @@ public abstract class Animal : Species, AnimalManager{
 
     protected void ReactToEnemy(Animal ani)
     {
-        print(name + ": Oh thats a " + ani.GetType());
         DangerEvaluation(ani);
-        print(name + ": dangerlvl = " + dangerLvl);
         if (RunAway(ani) || ani.strength > strength) 
         {
             print(name + ": NIGEROOOOO ");
@@ -313,7 +311,7 @@ public abstract class Animal : Species, AnimalManager{
     void AssessSituation()
     {
         
-        UpdateDetected();
+        //UpdateDetected();
         
         List<Animal> enemy = EnemiesNearBy();
         List<Animal> allies = AlliesNearBy();
@@ -344,12 +342,15 @@ public abstract class Animal : Species, AnimalManager{
     protected void OnTriggerEnter(Collider other)
     {
         if (dead) return;
-        if (other.transform.parent) return;
+        if (other.transform.parent)
+        {
+            if (other.transform.parent.GetComponent<Animal>() && GetType()==typeof(ChimeraAnt)) return;
+        }
+        
         if (other is SphereCollider) return;
         Species species = other.gameObject.GetComponent<Species>();
         if (species)
         {
-
             if (!detected.Contains(other.gameObject))// predator or prey out of range
             {
                 detected.Add(other.gameObject);
@@ -393,6 +394,7 @@ public abstract class Animal : Species, AnimalManager{
     protected void OnCollisionEnter(Collision collision)
     {
         if (dead) return;
+        if(collision.gameObject.tag == tag) Physics.IgnoreCollision(collision.collider, GetComponent<BoxCollider>(),true);
         if (target == null) return;
         if (collision.gameObject == target.gameObject)
         {
@@ -456,10 +458,10 @@ public abstract class Animal : Species, AnimalManager{
             Death();
             return;
         }
-        
+
         // when gaining hunger, force an assess
-        
-        
+
+        Developpement();
         if (target== null) // aucune cible
         {
             
@@ -467,7 +469,7 @@ public abstract class Animal : Species, AnimalManager{
             fleeing = false;
             feeding = false;
             withinreach = false;
-            Developpement();
+            
             if (hunger > 30)
             {
                 

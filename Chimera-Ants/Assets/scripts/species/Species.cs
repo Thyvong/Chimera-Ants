@@ -92,8 +92,8 @@ public abstract class Species : Element, SpeciesManager{
         //if the spieces eats regulary
 		if(hunger <= 10){
             //it grows well
-			baseLifePoint += 0.1f;
-            resistance += 0.1f;
+			baseLifePoint += 0.01f;
+            resistance += 0.01f;
 		}
         
     }

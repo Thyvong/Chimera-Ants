@@ -37,7 +37,7 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
         SetAnimalBoidId(0);
 		resistance = 1000;
 		longevity = longevity * 15f;
-        strength = 100;
+        strength = 1000;
         dietaryRegime = DietaryRegime.Omnivorus;
         move = new ChimeraAntMove(_rb);
 
@@ -236,7 +236,7 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
     // Qui runaway ? la chimera ant ou l'animal ? FAIT
 	public override bool RunAway(Animal animal){
 
-		if(dangerLvl >= 3){
+		if(dangerLvl >= 30){
             // ca rpz quoi ?
 			System.Random random = new System.Random();
             int rand = random.Next(0,10);
@@ -249,7 +249,7 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 				rand += random.Next(0,animal.dangerLvl);
 			}
 
-			if(rand >= 5){
+			if(rand >= 50){
 				print("DANGER");
 				return true;
 			}

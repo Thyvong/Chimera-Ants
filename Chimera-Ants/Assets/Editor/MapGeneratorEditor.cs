@@ -11,10 +11,22 @@ public class MapGeneratorEditor : Editor {
         // for rendering upon changing any parameters. Can get annoying with heavy object generation
         if (DrawDefaultInspector())
         {
-            
-        }
-        if(GUILayout.Button("Generate")){
             mapgen.CreateMap();
+        }
+        if(GUILayout.Button("GenerateMap")){
+            mapgen.CreateMap();
+        }
+        if (GUILayout.Button("GenerateTrees"))
+        {
+            mapgen.CreateVegetation();
+        }
+        if (GUILayout.Button("GenerateRocks"))
+        {
+            mapgen.CreateRocks();
+        }
+        if (GUILayout.Button("GenerateCreatures"))
+        {
+            mapgen.CreateCreature();
         }
     }
 }
