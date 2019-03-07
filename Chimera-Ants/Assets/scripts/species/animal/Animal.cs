@@ -1,15 +1,13 @@
 ﻿//This class represent all kind of animals and their behaviour
 using UnityEngine;
 using System.Collections.Generic;
-
-
-
-using System.Collections.Generic;
 using System;
 
 
 public abstract class Animal : Species, AnimalManager{
 
+
+    /* Status */
     public float strength { get; protected set; } //the strength value of an animal
     public float attackSpeed { get; protected set; }
     public float attackCD=0;
@@ -22,21 +20,15 @@ public abstract class Animal : Species, AnimalManager{
     protected bool isInReproductionTime = false;
     public State state { get; protected set; }
     public int dangerLvl { get; protected set; }
+
+    /* Boid parameters */
     public int animalBoidId { get; protected set; } // personal id
     public int familyBoidId { get;  set; } // group id
     public static int familyBoidIdReference = 0;
     public bool isInBoid = false;
     public List<Animal> animalInBoids;
-
-    public Vector3 direction;
-
-    //Méthode abstraite
-    public abstract void groupBehaviour();
-    public abstract void stateBehaviour();
-    public abstract void other();
-
     
-
+    
     public Movement move;
     
     /* Detection */
@@ -55,6 +47,9 @@ public abstract class Animal : Species, AnimalManager{
     private Vector3 randomRotation = Vector3.zero;
     private Vector3 randomDirection = Vector3.zero;
 
+
+
+    /* Constructor */
     protected Animal() : base()
     {
         strength = 1000;
@@ -70,23 +65,19 @@ public abstract class Animal : Species, AnimalManager{
 
     }
 
-
+    /* Setters */
     public void SetAnimalBoidId(int id){
         animalBoidId = id;
     }
-    
-    //Fait
     public void SetSex(Sex genre){
         sex = genre;
     }
-   
-
     public void SetState(State rang)
 	{
         state = rang;
     }
 
-    //Fait
+    /* Behaviours */
     public virtual void DangerEvaluation(Species species){
 
 
@@ -106,150 +97,132 @@ public abstract class Animal : Species, AnimalManager{
 			}
         }
     }
-
     // Increase danger level by nblvl
-    //Fait
     protected void increaseDangerLvl(int nbLvl){
         dangerLvl = dangerLvl + nbLvl;
     }
-
-    //Fait
     public void resetDangerLvl(){
         dangerLvl = 0;
     }
+    
 
-   
-    //Fait
-    public virtual void familyBehaviour(){
+    /*
+        //Fait
+        public virtual void Start(){
+            
+
+            if(state == State.Leader){
+                System.Random rand = new System.Random();
+                direction = new Vector3( rand.Next(-200,200), 0, rand.Next(-200,200));
+            }
+
+        }
+
+        //Fait
+        public void OnTriggerEnter(Collider other){
+            print("On trigger enter");
+            //If the gameObject is an animal
+            if(other.gameObject.GetComponent<Animal>() != null){
+
+                //If the animals belongs to the same family
+                if(other.gameObject.GetComponent<Animal>().familyBoidId == familyBoidId){
+
+                    if( animalInBoids.Contains(other.gameObject.GetComponent<Animal>()) == false){
+                            //Add to the list
+                            print("add");
+                            animalInBoids.Add(other.gameObject.GetComponent<Animal>());
+                    }                
+                }
+            }
+        }
+
+        public void OnTriggerExit(Collider other){
+
+            //If the animal leaves the trigger
+            if(other.gameObject.GetComponent<Animal>() != null){
+                //Remove the animal to the list
+                print("remove");
+                animalInBoids.Remove(other.gameObject.GetComponent<Animal>());
+
+
+            }
+        }
+
+        public virtual void Update(){
+            
+            if(animalInBoids != null){
+                isInBoid = true;
+            }
+            else{
+                isInBoid = false;
+            }
+            familyBehaviour();
+
+           
+        
+            if(animalInBoids.Count > 3){
+                    System.Random random = new System.Random();
+                    if(state == State.Leader){
+                        direction = new Vector3( random.Next(-200,200), 0, random.Next(-200,200));
+                        Deplacement(direction);
+                        print("nouvelle direction = " + direction);
+                    }
+                }
+
+        }
+        */
+
+    public virtual void familyBehaviour()
+    {
         boidBehaviour();
         stateBehaviour();
     }
+    public void boidBehaviour()
+    {
 
-    //Fait
-    public void boidBehaviour(){
+        if (isInBoid == true)
+        {
 
-        if(isInBoid == true){
-            
             Animal nearestNeighbour = null;
             float minDistance = 999999999f;
 
-            foreach(Animal animal in animalInBoids){
-                
+            foreach (Animal animal in animalInBoids)
+            {
+
                 // Selection of the nearest neighbour
-                if( Vector3.Distance(transform.position, animal.transform.position) < minDistance && animal.familyBoidId == familyBoidId && minDistance > 3.5f ){
+                if (Vector3.Distance(transform.position, animal.transform.position) < minDistance && animal.familyBoidId == familyBoidId && minDistance > 3.5f)
+                {
                     nearestNeighbour = animal;
                     minDistance = Vector3.Distance(transform.position, animal.transform.position);
 
                     //We come closer
-                    transform.position = Vector3.MoveTowards(transform.position, nearestNeighbour.transform.position,0.1f ) ;
+                    transform.position = Vector3.MoveTowards(transform.position, nearestNeighbour.transform.position, 0.1f);
                     transform.LookAt(nearestNeighbour.transform.position);
                     print("On s'approche");
                 }
             }
-            
-            if( minDistance < 3.5f){
+
+            if (minDistance < 3.5f)
+            {
                 //We move away
-                transform.position = Vector3.MoveTowards(transform.position, nearestNeighbour.transform.position*(-1),0.1f ) ;
-                transform.LookAt(nearestNeighbour.transform.position*(-1));
+                transform.position = Vector3.MoveTowards(transform.position, nearestNeighbour.transform.position * (-1), 0.1f);
+                transform.LookAt(nearestNeighbour.transform.position * (-1));
                 print("On s'éloigne");
             }
 
             //We center
-            Vector3 direction = new Vector3(0,0,0);
-            foreach(Animal animal in animalInBoids){
-                direction += animal.transform.forward; 
+            Vector3 direction = new Vector3(0, 0, 0);
+            foreach (Animal animal in animalInBoids)
+            {
+                direction += animal.transform.forward;
             }
             transform.LookAt(direction);
             Deplacement(direction);
-        }  
+        }
 
     }
-    
-
-/*
-    //Fait
-    public virtual void Start(){
-        System.Random random = new System.Random();
-        if (random.Next() % 2 == 0){
-            sex = Sex.Male;
-            
-        }
-        else{
-            sex = Sex.Female;
-        }
-
-        if(state == State.Leader){
-            System.Random rand = new System.Random();
-            direction = new Vector3( rand.Next(-200,200), 0, rand.Next(-200,200));
-        }
-        print("type" + GetType() + " sex1 " + sex);
-        
-    }
-
-    //Fait
-    public void OnTriggerEnter(Collider other){
-        print("On trigger enter");
-        //If the gameObject is an animal
-        if(other.gameObject.GetComponent<Animal>() != null){
-
-            //If the animals belongs to the same family
-            if(other.gameObject.GetComponent<Animal>().familyBoidId == familyBoidId){
-
-                if( animalInBoids.Contains(other.gameObject.GetComponent<Animal>()) == false){
-                        //Add to the list
-                        print("add");
-                        animalInBoids.Add(other.gameObject.GetComponent<Animal>());
-                }                
-            }
-        }
-	}
-	
-	public void OnTriggerExit(Collider other){
-        
-        //If the animal leaves the trigger
-        if(other.gameObject.GetComponent<Animal>() != null){
-            //Remove the animal to the list
-            print("remove");
-            animalInBoids.Remove(other.gameObject.GetComponent<Animal>());
-
-            
-        }
-	}
-
-    public virtual void Update(){
-        base.Update();
-        //Developpement();
-        //If isInBoid = true boidBehaviour is active 
-        if(animalInBoids != null){
-            isInBoid = true;
-        }
-        else{
-            isInBoid = false;
-        }
-        familyBehaviour();
-
-        if(longevity%500 == 0){
-            //print( GetType() + " family Boid Id =" + familyBoidId + "isInBOID " + isInBoid );  
-        }
-
-        //print("animal count " + animalInBoids.Count);
-        if(animalInBoids.Count > 3){
-                System.Random random = new System.Random();
-                if(state == State.Leader){
-                    direction = new Vector3( random.Next(-200,200), 0, random.Next(-200,200));
-                    Deplacement(direction);
-                    print("nouvelle direction = " + direction);
-                }
-            }
-
-        
-        
-    }
-    */
-    
-}
-   public abstract void groupBehaviour();
-   public abstract void stateBehaviour();
+    public abstract void groupBehaviour();
+    public abstract void stateBehaviour();
 
     public void Attack(Species species){
         if(attackCD <= 0)
@@ -275,49 +248,7 @@ public abstract class Animal : Species, AnimalManager{
         
     }
 
-    protected void ReactToEnemy(Animal ani)
-    {
-        DangerEvaluation(ani);
-        if (RunAway(ani) || ani.strength > strength) 
-        {
-            print(name + ": NIGEROOOOO ");
-
-            attacking = false;
-            fleeing = true;
-            feeding = false;
-            move.direction = Vector3.Normalize(transform.position - ani.transform.position); // sens opposé
-            
-        }
-        else
-        {
-            print(name + ": TATAKAI");
-            attacking = true;
-            fleeing = false;
-            feeding = false;
-            move.direction = Vector3.Normalize(ani.transform.position - transform.position);
-            
-
-        }
-        target = ani;
-        
-    }
-
-    
-    /*
-    protected void OnCollisionStay(Collision other){
-        if( familyBoidId != other.gameObject.GetComponent<Animal>().familyBoidId ){
-            Attack( other.gameObject.GetComponent<Animal>() );
-            if( other.gameObject.GetComponent<Animal>().lifePoint <= 0 ){
-                Feed( other.gameObject.GetComponent<Animal>() );
-                print("Collision familiale");
-                return;
-            }
-            Feed( other.gameObject.GetComponent<Species>() );
-            print("Collision manger");
-        }
-    }
-    */
-
+    /* Deplacement */
     protected virtual void Deplacement(Vector3 direction)
     {
         move.Apply(direction);
@@ -383,7 +314,7 @@ public abstract class Animal : Species, AnimalManager{
         }
     }
 
-
+    /* Detection */
     protected List<Animal> AlliesNearBy()
     {
         List<Animal> animal = new List<Animal>();
@@ -460,7 +391,45 @@ public abstract class Animal : Species, AnimalManager{
         }
         return food;
     }
+    protected void ReactToEnemy(Animal ani)
+    {
+        DangerEvaluation(ani);
+        if (RunAway(ani) || ani.strength > strength)
+        {
+            print(name + ": NIGEROOOOO ");
 
+            attacking = false;
+            fleeing = true;
+            feeding = false;
+            move.direction = Vector3.Normalize(transform.position - ani.transform.position); // sens opposé
+
+        }
+        else
+        {
+            print(name + ": TATAKAI");
+            attacking = true;
+            fleeing = false;
+            feeding = false;
+            move.direction = Vector3.Normalize(ani.transform.position - transform.position);
+
+
+        }
+        target = ani;
+
+    }
+    protected void UpdateDetected()
+    {
+        List<GameObject> cleanup = new List<GameObject>();
+        foreach (GameObject obj in detected)
+        {
+            if (obj != null && obj.transform.parent == null)
+            {
+                cleanup.Add(obj);
+            }
+        }
+        detected = cleanup;
+    }
+    
     void AssessSituation()
     {
         
@@ -512,12 +481,6 @@ public abstract class Animal : Species, AnimalManager{
         }
 
     }
-    //
-
-
-
-
-    // 
     protected void OnTriggerExit(Collider other)
     {
         if (dead) return;
@@ -573,44 +536,34 @@ public abstract class Animal : Species, AnimalManager{
 
         }
     }
-    protected void UpdateDetected()
-    {
-        List<GameObject> cleanup = new List<GameObject>();
-        foreach(GameObject obj in detected)
-        {
-            if(obj != null && obj.transform.parent == null)
-            {
-                cleanup.Add(obj);
-            }
-        }
-        detected = cleanup;
-    }
-
+    
     public abstract bool RunAway(Animal animal);
     public abstract void other();
+
+
     protected override void Death()
     {
         base.Death();
         transform.Rotate(0,0,90);
         _rb.isKinematic = true;
-        FOV.enabled = false;
+        FOV.enabled = false; // désactive la trigger zone
     }
 
     protected virtual void Update()
     {
+        /* Death */
         if (dead) return;
         if ((lifePoint <= 0 || longevity <= 0 || baseLifePoint <= 20) && !dead)
         {
             Death();
             return;
         }
-
-        // when gaining hunger, force an assess
-
+        
+        // Les paramètres de status évoluent
         Developpement();
+
         if (target== null) // aucune cible
         {
-            
             attacking = false;
             fleeing = false;
             feeding = false;
@@ -618,48 +571,42 @@ public abstract class Animal : Species, AnimalManager{
             
             if (hunger > 30)
             {
-                
+                // Cherche à manger
                 UpdateDetected();
-                
                 List<Species> food = FoodNearBy();
                 if (food.Count != 0)
                 {
                     if (food[0])
                     {
-                        print(name + " : found " + food[0]);
                         target = food[0];
                         feeding = true;
                         move.direction = target.transform.position - transform.position;
-                        print(name + " : Oh i need food, here is some - " + target.name);
                     }
-                    
                 }
             }
+            // déplacement
             Wander();
         }
-        else
+        else // Possède une cible
         {
-            
             // refresh direction
             if (fleeing) // fuir la cible
             {
-                if (target.dead)
+                if (target.dead) // morte entre temps
                 {
                     target = null;
                     fleeing = false;
                     return;
                 }
-                
-                move.direction = Vector3.Normalize(transform.position - target.transform.position); // sens opposé
+                // fuir en sens opposé
+                move.direction = Vector3.Normalize(transform.position - target.transform.position); 
                 move.Apply(move.direction);
-                
-                
             }
             else
             {
                 if (attacking) // attaquer la cible
                 {
-                    if (target.dead)
+                    if (target.dead) // morte entre temps
                     {
                         target = null;
                         attacking = false;
@@ -675,27 +622,23 @@ public abstract class Animal : Species, AnimalManager{
                         // continuous action
                         Attack(target);
                     }
-
-
+                    
                 }
-                else // 
+                else
                 {
-                    if (feeding) // 
+                    if (feeding) // manger la cible
                     {
-                        
                         if (!withinreach) // se rapprocher
                         {
                             move.direction = Vector3.Normalize(target.transform.position - transform.position);
                             move.Apply(move.direction);
                         }
-                        
-
-
                     }
                 }
             }
                 
         }
+        // dans tous les cas, le délai entre chaque attaque diminue
         if(attackCD>0)
             attackCD -= Time.deltaTime;
 
