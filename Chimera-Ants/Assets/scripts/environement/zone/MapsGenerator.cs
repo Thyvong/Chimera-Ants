@@ -4,7 +4,7 @@ using UnityEngine;
 public class MapsGenerator: MonoBehaviour
 {
     /* Paramètre de génération du terrain*/
-    public float lacunarity, persistence, scale, heightmeshscale;
+    public float lacunarity, persistence, scale, heightmeshscale, offsetx,offsety;
     public int octaves, width, height;
     public Biome[] biomes;
     public AnimationCurve heightCorrectionCurve;
@@ -23,6 +23,8 @@ public class MapsGenerator: MonoBehaviour
     public GameObject rockModel;
     public Transform rockList; // object parent de tous les cailloux à placer ici
     List<int> rocksLocationIndex = new List<int>();
+
+    public Transform speciesList;
 
 
     /* Methode */
@@ -48,7 +50,7 @@ public class MapsGenerator: MonoBehaviour
                 {
                     float xnoise =  x / scale * frequency ;
                     float ynoise =  y / scale * frequency;
-                    heightvalue += (Mathf.PerlinNoise(xnoise, ynoise) * 2 -1) * amplitude;
+                    heightvalue += (Mathf.PerlinNoise(xnoise+offsetx, ynoise+offsety) * 2 -1) * amplitude;
 
                     amplitude *= persistence;
                     frequency *= lacunarity;
@@ -145,8 +147,8 @@ public class MapsGenerator: MonoBehaviour
         }
         if (plainIndex == -1)
             return;
-        
-        
+
+        RaycastHit hit1;
         int index = rng.Next() % mesh.vertexCount;
 
         for (int i = 0; i < nbRocks; i++)
@@ -164,7 +166,14 @@ public class MapsGenerator: MonoBehaviour
             );
             // save pos as an index in an array. Don't forget to check if pos is not already occupied
             rocksLocationIndex.Add(index);
-            GameObject rock = Instantiate(rockModel, 50*mesh.vertices[index], Quaternion.FromToRotation(Vector3.up, mesh.normals[index]));
+
+            GameObject rock = Instantiate(rockModel, 20*mesh.vertices[index], Quaternion.FromToRotation(Vector3.up, mesh.normals[index]));
+            if (Physics.Raycast(new Ray(rock.transform.position, new Vector3(0, -1000.0f, 0)), out hit1))
+            {
+                print("hit1");
+                rock.transform.position = hit1.point;
+            }
+
             float scalemultiply = (rng.Next() % 10.0f) * mesh.vertices[index].y;
             rock.transform.localScale = (scalemultiply!=0)?rock.transform.localScale * scalemultiply : rock.transform.localScale;
             rock.transform.parent = rockList;
@@ -172,18 +181,29 @@ public class MapsGenerator: MonoBehaviour
 
 
     }
+
     public void GenerateTreePatch(Vector3 pos, Quaternion rotation, int radius, float density)
     {
         System.Random rng = new System.Random();
-        
+        RaycastHit hit1;
+
         int nbTrees =  (int)(20.0 * density);
         for(int i=0; i< nbTrees; ++i)
         {
-            GameObject tree = Instantiate(treeModel, 50 * (pos + new Vector3( (rng.Next(-radius, radius))/1000.0f, 0, (rng.Next(-radius, radius)) / 1000.0f) ), rotation); // *50 pour correspondre au scale du terrain
-            //float scalemultiply = (rng.Next() % 2.0f) * pos.y;
+            GameObject tree = Instantiate(treeModel,   new Vector3(20.00f * (pos.x + rng.Next(-radius, radius)/1000.0f), 10 , 20.00f * (pos.z +rng.Next(-radius, radius) / 1000.0f) ) , rotation); // *50 pour correspondre au scale du terrain
+            print(pos + " vs " + pos.y + " vs " + tree.transform.position.y);
+            
+            if (Physics.Raycast(new Ray(tree.transform.position, new Vector3(0,-1000.0f,0)), out hit1) )
+            {
+                print("hit1");
+                tree.transform.position = hit1.point;
+            }
+
+
             float scalemultiply =1;
             tree.transform.localScale = (scalemultiply != 0) ? tree.transform.localScale * scalemultiply : tree.transform.localScale;
             tree.transform.parent = treeList;
+            
         }
         
     }
@@ -233,6 +253,140 @@ public class MapsGenerator: MonoBehaviour
         
     }
 
+
+    GameObject MakeCreature(Vector3 pos, int speciesId)
+    {
+        string source = "Prefabs/";
+        switch (speciesId)
+        {
+            case 0:
+                {
+                    return (GameObject)Instantiate(Resources.Load(source + "AntQueen"), pos, new Quaternion());
+                }
+            case 1:
+                {
+                    return (GameObject)Instantiate(Resources.Load(source + "AntWorker"), pos, new Quaternion());
+                }
+
+            case 2:
+                {
+                    return (GameObject)Instantiate(Resources.Load(source + "AntSoldier"), pos, new Quaternion());
+                }
+
+            case 3:
+                {
+                    return (GameObject)Instantiate(Resources.Load(source + "Wolf"), pos, new Quaternion());
+                }
+            default:
+                {
+                    return (GameObject)Instantiate(Resources.Load(source + "Wolf"), pos, new Quaternion());
+                }
+
+        }
+    }
+    public void GenerateSpeciesPatch(Vector3 pos, int radius, float density)
+    {
+        int rng = Random.Range(0,5);
+        bool isAnimal = false;
+        bool isAnt = false;
+        RaycastHit hit1;
+
+        GameObject leader = MakeCreature(20.0f * (pos + new Vector3(Random.Range(-radius, radius) / 1000.0f, 0, Random.Range(-radius, radius) / 1000.0f)), rng);
+        GameObject species;
+
+        int speciesNb = (int)(10.0 * density);
+
+        if (leader.GetComponent<Species>().GetType().IsSubclassOf(typeof(Animal)))
+        {
+            isAnimal = true;
+            leader.GetComponent<Animal>().SetState(State.Leader);
+            leader.GetComponent<Animal>().familyBoidId = Random.Range(0,100);
+            if(leader.GetComponent<Species>().GetType() == typeof(ChimeraAnt))
+            {
+                isAnt = true;
+                if(leader.GetComponent<ChimeraAnt>().status != ChimeraAntClass.King && leader.GetComponent<ChimeraAnt>().status != ChimeraAntClass.Queen)
+                {
+                    leader.GetComponent<Animal>().SetState(State.Follower);
+                    speciesNb = 3;
+                }
+                else
+                {
+                    rng = 1; // one queen, rest are soldier/worker
+                }
+            }
+        }
+        
+        
+        for (int i = 0; i < speciesNb; ++i)
+        {
+
+            species = MakeCreature(20.0f * (pos+ new Vector3(Random.Range(-radius, radius) / 1000.0f, 0, Random.Range(-radius, radius) / 1000.0f)) , rng); 
+            if (isAnimal)
+            {
+                species.GetComponent<Animal>().SetState(State.Follower);
+                species.GetComponent<Animal>().familyBoidId = leader.GetComponent<Animal>().familyBoidId;
+                if (isAnt)
+                {
+                    if(leader.GetComponent<ChimeraAnt>().status == ChimeraAntClass.Queen)
+                    {
+                        rng = Random.Range(1, 3);
+                        species.GetComponent<ChimeraAnt>().queen = leader.GetComponent<ChimeraAnt>();
+                    }
+                    
+                }
+            }
+            if (Physics.Raycast(new Ray(species.transform.position, new Vector3(0, -1000.0f, 0)), out hit1))
+            {
+                
+                species.transform.position = hit1.point;
+            }
+
+
+            float scalemultiply = 1;
+            species.transform.localScale = (scalemultiply != 0) ? species.transform.localScale * scalemultiply : species.transform.localScale;
+            species.transform.parent = speciesList;
+            species.GetComponent<SphereCollider>().enabled = false;
+            species.GetComponent<SphereCollider>().enabled = true;
+        }
+        leader.GetComponent<SphereCollider>().enabled = false;
+        leader.GetComponent<SphereCollider>().enabled = true;
+        leader.transform.parent = speciesList;
+
+    }
+    public void GenerateRandomCreature(float[,] heightmap, Mesh mesh)
+    {
+        
+        int creatureNb = Random.Range(5, 10);
+
+        int plainIndex = 0;
+        for (int it = 0; it < biomes.Length; it++)
+        {
+            if (biomes[it].zoneType == TerritoryType.PLAINE)
+            {
+                plainIndex = it;
+                break;
+            }
+            else
+            {
+                plainIndex = -1;
+            }
+        }
+        if (plainIndex == -1)
+            return;
+
+
+        
+        for (int i = 0; i < creatureNb; i++)
+        {
+            
+            GenerateSpeciesPatch(mesh.vertices[(mesh.vertexCount / 2 + 17)] + new Vector3(Random.Range(-1.0f,1.0f),0, Random.Range(-1.0f, 1.0f)), 200, 2.0f);
+        }
+
+
+
+    }
+
+
     public void CreateMap()
     {
         MapRenderer maprenderer = gameObject.GetComponent<MapRenderer>();
@@ -240,13 +394,25 @@ public class MapsGenerator: MonoBehaviour
         _colorMap = generateColorMap(_heightMap);
         _texture = maprenderer.generateTexture(_colorMap, width, height);
         _mesh = generateMesh(_heightMap);
-
-        GenerateRocks(_heightMap, _mesh);
-        GenerateVegetation(_heightMap, _mesh);
+        
         maprenderer.renderMesh(_mesh, _texture);
         maprenderer.meshfilter.gameObject.GetComponent<MeshCollider>().sharedMesh = _mesh;
     }
-    
+    public void CreateVegetation()
+    {
+        GenerateVegetation(_heightMap, _mesh);
+        
+    }
+    public void CreateRocks()
+    {
+        GenerateRocks(_heightMap, _mesh);
+
+    }
+    public void CreateCreature()
+    {
+        GenerateRandomCreature(_heightMap, _mesh);
+
+    }
 
 }
 /* Classe support à la création de mesh */

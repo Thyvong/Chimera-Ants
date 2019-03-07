@@ -4,17 +4,25 @@
 [Aa]ssets/AssetStoreTools*
 [Aa]ssets/Plugins*
 [Bb]uild/
+[Bb]uilds/
 [Ll]ibrary/
 [Ll]ocal[Cc]ache/
+[Ll]ogs/
 [Oo]bj/
 [Tt]emp/
 [Uu]nityGenerated/
 [Gg]it[Hh]ub/
+
 # file on crash reports
 sysinfo.txt
+
 # Unity3D generated meta files
 *.pidb.meta
-*.meta
+*.pdb.meta
+*.mdb.meta
+
+# Never ignore Asset meta data
+![Aa]ssets/**/*.meta
 
 ###
 # VS/MD solution and project files
@@ -23,14 +31,19 @@ sysinfo.txt
 .vs/
 *.booproj
 *.csproj
+*.mdb
+*.opendb
+*.pdb
+*.pidb
 *.sln
 *.suo
 *.svd
+*.tmp
 *.unityproj
 *.user
 *.userprefs
-*.pidb
-.DS_Store
+*.VC.db
+
 
 ###
 # OS generated
@@ -44,6 +57,3 @@ Icon?
 ehthumbs.db
 Thumbs.db
 
-*.mdb
-*.dll
-*.stamp
