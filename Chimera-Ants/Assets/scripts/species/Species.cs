@@ -44,11 +44,12 @@ public abstract class Species : Element, SpeciesManager{
     //Méthode concrete
 
     //Fait
-    public virtual void Feed(Species species){
+    protected virtual void Feed(Species species){
         if(lifePoint <= baseLifePoint-10){
             RestoreLifePoints();
             hunger = 0;
             Destroy(species);
+            transform.localScale *= 1.00001f;
         } 
     }
 
@@ -103,7 +104,7 @@ public abstract class Species : Element, SpeciesManager{
         }
     }
 
-    protected void Update(){
-        Developpement();
+    protected virtual void Update(){
+        Developpement();        
     }
 }

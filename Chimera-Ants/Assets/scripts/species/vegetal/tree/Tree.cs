@@ -18,9 +18,9 @@ public class Tree : Vegetal{
 
         if(longevity%931 == 0){
             System.Random random = new System.Random();
-            int randX = random.Next(-1000,1000);
-            int randY = random.Next(-1000,1000);
-            print("Instatiating " + source);
+            int randX = random.Next(-100,100);
+            int randY = random.Next(-100,100);
+            //print("Instatiating " + source);
 
             Tree tree = ( (GameObject)Instantiate(Resources.Load(source), transform.position + new Vector3(randX,0,randY), new Quaternion())).GetComponent<Tree>();
             //print("LO " + longevity);

@@ -8,7 +8,9 @@ public abstract class Animal : Species, AnimalManager{
     public NutritionStyle[] nutritionStyle { get; protected set; }
     public GroupStyle[] groupStyle { get; protected set; }
     public DietaryRegime dietaryRegime { get; protected set; }
-    public Sex sex { get; protected set; }
+    public Sex sex { get; set; }
+
+    protected bool isInReproductionTime = false;
     public State state { get; protected set; }
     public int dangerLvl { get; protected set; }
     public int animalBoidId { get; protected set; } // personal id
@@ -16,6 +18,8 @@ public abstract class Animal : Species, AnimalManager{
     public static int familyBoidIdReference = 0;
     public bool isInBoid = false;
     public List<Animal> animalInBoids;
+
+    public Vector3 direction;
 
     //Méthode abstraite
     public abstract void groupBehaviour();
@@ -98,6 +102,7 @@ public abstract class Animal : Species, AnimalManager{
     //Fait
     public virtual void familyBehaviour(){
         boidBehaviour();
+        stateBehaviour();
     }
 
     //Fait
@@ -111,7 +116,7 @@ public abstract class Animal : Species, AnimalManager{
             foreach(Animal animal in animalInBoids){
                 
                 // Selection of the nearest neighbour
-                if( Vector3.Distance(transform.position, animal.transform.position) < minDistance && animal.familyBoidId == familyBoidId){
+                if( Vector3.Distance(transform.position, animal.transform.position) < minDistance && animal.familyBoidId == familyBoidId /*&& RunAway(animal) == false*/){
                     nearestNeighbour = animal;
                     minDistance = Vector3.Distance(transform.position, animal.transform.position);
 
@@ -144,6 +149,7 @@ public abstract class Animal : Species, AnimalManager{
 			species.TakeDamage( strength * weight );
 		}
     }
+    
 
     //UNITY Methode
     //Fait
@@ -159,6 +165,8 @@ public abstract class Animal : Species, AnimalManager{
         _rb.useGravity = true;
         _rb.interpolation = RigidbodyInterpolation.Interpolate;
         _rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+
+        direction = new Vector3(0f,0f,0f);
     }
 
     //Fait
@@ -166,10 +174,18 @@ public abstract class Animal : Species, AnimalManager{
         System.Random random = new System.Random();
         if (random.Next() % 2 == 0){
             sex = Sex.Male;
+            
         }
         else{
             sex = Sex.Female;
         }
+
+        if(state == State.Leader){
+            System.Random rand = new System.Random();
+            direction = new Vector3( rand.Next(-200,200), 0, rand.Next(-200,200));
+        }
+        print("type" + GetType() + " sex1 " + sex);
+        
     }
 
     //Fait
@@ -192,11 +208,14 @@ public abstract class Animal : Species, AnimalManager{
         if(other.gameObject.GetComponent<Animal>() != null){
             //Remove the animal to the list
             animalInBoids.Remove(other.gameObject.GetComponent<Animal>());
+
+            
         }
 	}
 
     public virtual void Update(){
-        Developpement();
+        base.Update();
+        //Developpement();
         //If isInBoid = true boidBehaviour is active 
         if(animalInBoids != null){
             isInBoid = true;
@@ -205,6 +224,23 @@ public abstract class Animal : Species, AnimalManager{
             isInBoid = false;
         }
         familyBehaviour();
-    }
 
+        if(longevity%500 == 0){
+            //print( GetType() + " family Boid Id =" + familyBoidId + "isInBOID " + isInBoid );  
+        }
+
+        //print("animal count " + animalInBoids.Count);
+        if(animalInBoids.Count > 3){
+                System.Random random = new System.Random();
+                if(state == State.Leader){
+                    direction = new Vector3( random.Next(-200,200), 0, random.Next(-200,200));
+                    Deplacement(direction);
+                }
+            }
+
+        
+        
+    }
+    
+    
 }

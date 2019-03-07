@@ -621,11 +621,10 @@ GameObject:
   - component: {fileID: 4633668345155236}
   - component: {fileID: 95855511932542394}
   - component: {fileID: 114025379758918506}
-  - component: {fileID: 54890039822803774}
   - component: {fileID: 135670329867488418}
   - component: {fileID: 65813971343271666}
   m_Layer: 0
-  m_Name: Wolf
+  m_Name: WolfMale
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2278,9 +2277,9 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1401595648993520}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 685.57684, y: 8.07, z: 268.43594}
-  m_LocalScale: {x: 20, y: 20, z: 20}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 245, y: 0, z: 779}
+  m_LocalScale: {x: 13.063923, y: 13.063923, z: 12.532215}
   m_Children:
   - {fileID: 4747113054498564}
   - {fileID: 4623302513638918}
@@ -2747,21 +2746,6 @@ Transform:
   m_Father: {fileID: 4293038147552656}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!54 &54890039822803774
-Rigidbody:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1401595648993520}
-  serializedVersion: 2
-  m_Mass: 50
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 1
-  m_Constraints: 0
-  m_CollisionDetection: 2
 --- !u!65 &65813971343271666
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -2772,8 +2756,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.5, y: 0.7, z: 1}
-  m_Center: {x: 0, y: 0.25, z: 0.1}
+  m_Size: {x: 0.26459655, y: 0.5448134, z: 0.9689989}
+  m_Center: {x: -0.008396911, y: 0.26308602, z: 0}
 --- !u!95 &95855511932542394
 Animator:
   serializedVersion: 3
@@ -2803,6 +2787,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea1b8fef447a06f4c9fd13053272a1c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sex: 0
+  isInBoid: 1
+  animalInBoids: []
+  direction: {x: -68, y: 0, z: 120}
 --- !u!135 &135670329867488418
 SphereCollider:
   m_ObjectHideFlags: 1
@@ -3148,7 +3136,7 @@ SkinnedMeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100004, guid: 758d2f22cd1f0477ab61c62fd1c9f415, type: 3}
+  - {fileID: 2100000, guid: be24a978edb7044989fda9e5f4ee4a8b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3254,7 +3242,7 @@ SkinnedMeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100008, guid: 758d2f22cd1f0477ab61c62fd1c9f415, type: 3}
+  - {fileID: 2100000, guid: cecffcdfbdf3042f8a488f8a881e07c6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
