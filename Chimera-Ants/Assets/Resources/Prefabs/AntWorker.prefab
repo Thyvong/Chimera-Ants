@@ -1597,6 +1597,10 @@ MonoBehaviour:
   dead: 0
   hunger: 0
   attackCD: 0
+  sex: 0
+  isInBoid: 0
+  animalInBoids: []
+  boidupdate: 0
   fleeing: 0
   attacking: 0
   feeding: 0
@@ -1614,7 +1618,7 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 7
+  m_Radius: 3
   m_Center: {x: 0, y: 0.052527428, z: 0}
 --- !u!137 &137550017245134968
 SkinnedMeshRenderer:

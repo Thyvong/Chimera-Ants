@@ -22,9 +22,7 @@ public abstract class Species : Element, SpeciesManager{
     protected Rigidbody _rb;
 
     
-
-    //private static int speciesBoidIdReference = 0;
-    //protected int spiecesBoidId;
+    
     protected virtual void Awake()
     {
         _rb = gameObject.AddComponent<Rigidbody>();
@@ -64,7 +62,7 @@ public abstract class Species : Element, SpeciesManager{
     //Méthode concrete
 
     //Fait
-    protected virtual void Feed(Species species){
+    public virtual void Feed(Species species){
         if(lifePoint <= baseLifePoint-10){
             RestoreLifePoints();
             species.Eaten();
@@ -92,18 +90,18 @@ public abstract class Species : Element, SpeciesManager{
     {
         hunger += Time.deltaTime;
         //if the species didn't eat for too long
-		if(hunger >= 70){
+		if(hunger >= 80){
             //it weakens
-			lifePoint --;
-			baseLifePoint --;
-            resistance -= 0.1f;
+			lifePoint -= Time.deltaTime;
+			baseLifePoint -= Time.deltaTime;
+            resistance -= Time.deltaTime;
 		}
 
         //if the spieces eats regulary
 		if(hunger <= 10){
             //it grows well
-			baseLifePoint += 0.01f;
-            resistance += 0.01f;
+			baseLifePoint += Time.deltaTime;
+            resistance += Time.deltaTime;
 		}
 
         

@@ -1,6 +1,7 @@
 ﻿//This class represent Chimera ants features and behaviour
-using System;
+
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ChimeraAnt : Bug, ChimeraAntManager{
@@ -11,6 +12,9 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 
     public Species foodForQueen;
     public ChimeraAnt queen;
+
+    protected new static System.Random rng;
+    public new static int  familyBoidIdReference = 0;
 
 
     // à mettre dans chimeraantmanager
@@ -26,9 +30,12 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
         base.Awake();
     
         print("CHIMERA ANT " + name + "has started");
-
-        System.Random random = new System.Random();
-        if (random.Next() % 2 == 0)
+        if (rng == null)
+        {
+            rng = new System.Random();
+        }
+        
+        if (rng.Next() % 2 == 0)
         {
             sex = Sex.Male;
         }
@@ -36,38 +43,46 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
         {
             sex = Sex.Female;
         }
+        
+        if (status == ChimeraAntClass.King)
+        {
+            sex = Sex.Male;
+            state = State.Leader;
+        }
+        if (status == ChimeraAntClass.Queen)
+        {
+            sex = Sex.Female;
+            state = State.Leader;
+            familyBoidIdReference++;
+        }
+        if (status != ChimeraAntClass.Queen && status != ChimeraAntClass.King)
+        {
+            state = State.Follower;
+        }
+        familyBoidId = familyBoidIdReference;
 
-		if(status == ChimeraAntClass.King){
-			sex = Sex.Male;
-		}
-
-		if(familyBoidIdReference == 0){
-			familyBoidId = 0;
-			familyBoidIdReference++;
-		}
-		//Chimera Ant Id
+        //Chimera Ant Id
         SetAnimalBoidId(0);
 
 		speciesGenomes = new List<Genomes>();
 		speciesGenomes.Add(Genomes.Tree);
 		speciesGenomes.Add(Genomes.Wolf);
-		print("Hello c'est moi");
 
 
 		longevity = longevity * 15f;
 
         strength = 1000;
         dietaryRegime = DietaryRegime.Omnivorus;
+
         move = new ChimeraAntMove(_rb);
 
+        GetComponent<SphereCollider>().enabled = false;
+        GetComponent<SphereCollider>().enabled = true;
 
 	}
     
-    
-	
     private ChimeraAnt SpawnChildren()
     {	
-		ChimeraAntClass rang = ChimeraAntClass.Worker;
 		int familyId = familyBoidId;
 
         if (status != ChimeraAntClass.Queen) return null;
@@ -80,8 +95,6 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 			//if it's a king we set a new family boid id
             source += "AntKing";
             _isKingBorn = true;
-			familyId = Animal.familyBoidIdReference;
-			rang = ChimeraAntClass.King;
         }
         else
         {
@@ -89,7 +102,6 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
             if (longevity <= 3750 && !_isKingBorn)
             {
                 source += "AntKingGuard";
-				rang = ChimeraAntClass.KingGuard;
             }
             else
             {
@@ -99,12 +111,10 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
                 if (random.Next() % 2 == 0)
                 {
                     source += "AntWorker";
-					rang = ChimeraAntClass.Worker;
                 }
                 else
                 {
                     source += "AntSoldier";
-					rang = ChimeraAntClass.Soldier;
                 }        
             }
         }
@@ -115,7 +125,8 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
         print("Transmitting movement ");
         ((ChimeraAntMove)move).InheritMovement((ChimeraAntMove)go.move); // transmitting queen's movement qualities to newborn
         go.queen = this;
-
+        go.familyBoidId = familyBoidId; // after init/awake, reassign newborn to this queen's family
+        go.transform.parent = transform.parent;
         return go;
     }
 
@@ -135,59 +146,38 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 
 	//Fait -Méthode à supprimer 
     public override Species Reproduction(Species species){
-		//print("Appel reproduction chimera ant");
-        /* La reine n'a pas besoin de roi pour spawner des enfants, alors pourquoi cette méthode ? */
-		if(species.GetType() == typeof(ChimeraAnt)){
-			//speciesGenomesReproduction();
-			//print("Nous somme ici ?");
-            return SpawnChildren();
-		}
-		return null;
+        return ChimeraReproduction(speciesGenomes[Random.Range(0,speciesGenomes.Count)]);
+
     }
 
 
-	//Factory en fonction des différent animaux
-	public void ChimeraReproduction(Genomes gene){
+    //Factory en fonction des différent animaux
+    public Species ChimeraReproduction(Genomes gene)
+    {
+        ChimeraAnt child = null;
+        switch (gene){
+            case Genomes.Tree:{
+                    child = SpawnChildren();
+                    int randX = Random.Range(-10, 10);
+                    int randY = Random.Range(-10, 10);
+                    print("nAISSANCE mode arbre");
+                    child.transform.position = transform.position + new Vector3(randX, 0, randY);
+                }
+                break;
+            case Genomes.Wolf:
+                {
+                    if (state != State.Leader && isInReproductionTime == false) return null;
+
+                    child = SpawnChildren();
+                }
+                break;
+            default:
+                {
+                    child = SpawnChildren();
+                }break;
+        }
 		
-		string source = "Prefabs/";
-
-		System.Random random = new System.Random();
-		int rand = random.Next();
-
-		if(rand%2 == 0){
-			source += "AntWorker";
-			ChimeraAntClass rang = ChimeraAntClass.Worker;
-		}
-		else{
-			source += "AntSoldier";
-			ChimeraAntClass rang = ChimeraAntClass.Soldier;
-		}
-
-		
-		if(gene == Genomes.Tree){
-			
-			if(longevity%977 != 0) return ;
-
-			int familyId = familyBoidId;
-			
-			int randX = random.Next(-10,10);
-			int randY = random.Next(-10,10);
-			print("nAISSANCE mode arbre");
-			ChimeraAnt antChild = ( (GameObject)Instantiate(Resources.Load(source), transform.position + new Vector3(randX,0,randY), new Quaternion())).GetComponent<ChimeraAnt>();
-		}
-		
-		if(gene == Genomes.Wolf){
-
-			if (state != State.Leader) return ;
-
-			if (isInReproductionTime == false) return ;
-
-			int familyId = familyBoidId;
-
-			print("Naissance mode Loup");
-			ChimeraAnt antChild =( (GameObject)Instantiate(Resources.Load(source), transform.position - transform.forward*(-1.5f), new Quaternion())).GetComponent<ChimeraAnt>();
-			antChild.familyBoidId = familyId;
-		}
+        return child;
 	}
 
 	//FAIT
@@ -197,24 +187,11 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 			
 			if(cAnt.sex == Sex.Female){
 				cAnt.status = ChimeraAntClass.Queen;
-				//print("PONDEUSE !!!");
-				//Destroy(gameObject);
+				//change material to red
 			}
 		}
 	}
 
-	protected override void Feed(Species species){
-		if(species.GetType() == typeof(Animal) || species.GetType() == typeof(Vegetal)){
-			base.Feed(species);
-
-			if(species.GetType() == typeof(Tree) && speciesGenomes.Contains(Genomes.Tree)){
-				speciesGenomes.Add(Genomes.Tree);
-			}
-			if(species.GetType() == typeof(Wolf) && speciesGenomes.Contains(Genomes.Wolf)){
-				speciesGenomes.Add(Genomes.Tree);
-			}
-		}
-	}
 
     public override void Drink(){}
     public override void groupBehaviour(){}
@@ -243,7 +220,7 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 	}
 
    	public override void stateBehaviour(){
-		if(this.status == ChimeraAntClass.Queen || this.status == ChimeraAntClass.King){
+		if(status == ChimeraAntClass.Queen || status == ChimeraAntClass.King){
 			state = State.Leader;
 		}
 		else{
@@ -318,9 +295,18 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
                 attackSpeed += animal.attackSpeed / 5;
                 ((ChimeraAntMove)move).AddMovement(animal.move);
             }
-            
+            if (species.GetType() == typeof(Tree) && speciesGenomes.Contains(Genomes.Tree))
+            {
+                speciesGenomes.Add(Genomes.Tree);
+            }
+            if (species.GetType() == typeof(Wolf) && speciesGenomes.Contains(Genomes.Wolf))
+            {
+                speciesGenomes.Add(Genomes.Tree);
+            }
+
         }
     }
+    
     public override void Feed(Species species)
     {
         if(status == ChimeraAntClass.Queen)
@@ -337,10 +323,10 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
         }
         if(status == ChimeraAntClass.Worker)
         {
-            if (hunger > 70 )
+            if (hunger > 50 || queen == null || queen.dead)
             {
-                print("WTFFFFFF");
                 base.Feed(species);
+                species = null;
             }
             else
             {
@@ -355,8 +341,8 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
         }
         if(status != ChimeraAntClass.Worker && status != ChimeraAntClass.Queen)
         {
-            print("ihnooooooooooooo");
             base.Feed(species);
+            species = null;
         }
         
 
@@ -376,21 +362,20 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 			System.Random random = new System.Random();
             int rand = random.Next(0,10);
 
-			if(animal.dangerLvl > 3){
+			if(animal.dangerLvl > 30){
 				rand -= random.Next(0,animal.dangerLvl);
 			}
 
-			if(animal.dangerLvl <= 3){
+			if(animal.dangerLvl <= 20){
 				rand += random.Next(0,animal.dangerLvl);
 			}
 
 			if(rand >= 50){
-				print("DANGER");
 				return true;
 			}
 			
 		}
-		print("NO DANGER");
+
    		return false;
    	}
    	public override void other(){}
@@ -401,30 +386,43 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 
 	protected override void Update(){
         base.Update();
-        if (target)
+        if (target!= null)
         {
-            if (target.transform.parent)
+            if (target.transform.parent && target.transform.parent.GetComponent<ChimeraAnt>())
             {
                 target = null;
                 feeding = false;
             }
         }
-        if (foodForQueen)
+        if (foodForQueen != null)
         {
-            Vector3 dir = queen.transform.position - transform.position;
-            move.direction = Vector3.Normalize(dir);
-            move.Apply(move.direction);
-            foodForQueen.transform.localPosition = new Vector3(0, 1, 0);
-            if (Vector3.Distance(queen.transform.position, transform.position) < 2)
+            if (queen != null && !queen.dead)
             {
-                FeedQueen(queen);
+                Vector3 dir = queen.transform.position - transform.position;
+                move.direction = Vector3.Normalize(dir);
+                move.Apply(move.direction);
+                foodForQueen.transform.localPosition = new Vector3(0, 1, 0);
+                if (Vector3.Distance(queen.transform.position, transform.position) < 3)
+                {
+                    FeedQueen(queen);
+                }
             }
+            else
+            {
+                Feed(foodForQueen);
+            }
+            
         }
         if(Input.GetMouseButtonDown(0))
         {
             if (status == ChimeraAntClass.Queen)
                 SpawnChildren();
             
+        }
+        if (longevity % 300 == 0)
+        {
+            if (status == ChimeraAntClass.Queen)
+                SpawnChildren();
         }
     }
 }

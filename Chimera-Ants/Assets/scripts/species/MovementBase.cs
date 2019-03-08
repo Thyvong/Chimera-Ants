@@ -16,6 +16,16 @@ public class Fly : MovementBase
         rigidbody.MovePosition(rigidbody.transform.position + direction * speed * acceleration * SCALE);
     }
 }
+public class Jump : MovementBase
+{
+    public override void Apply(Rigidbody rigidbody, Vector3 direction, float speed, float acceleration)
+    {
+        //rigidbody.transform.LookAt(rigidbody.transform.position + direction);
+        if (rigidbody.velocity != Vector3.zero) return;
+        rigidbody.AddForce((direction +  Vector3.up) * speed * 10, ForceMode.Impulse);
+    }
+    
+}
 public class Dash : MovementBase
 {
     public override void Apply(Rigidbody rigidbody, Vector3 direction, float speed, float acceleration)
@@ -24,7 +34,7 @@ public class Dash : MovementBase
         if (rigidbody.velocity != Vector3.zero) return;
         rigidbody.AddForce(direction * speed * 10, ForceMode.Impulse);
     }
-    
+
 }
 public class Walk : MovementBase
 {

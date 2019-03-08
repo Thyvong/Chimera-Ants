@@ -69,9 +69,11 @@ public class ChimeraAntMove : Movement
     public ChimeraAntMove(Rigidbody rigidbody, Vector3 dir, float maxvitesse, float maxaccel) : base(rigidbody, dir, maxvitesse, maxaccel)
     {
         knownMode.Add("Walk", new Walk());
+        knownMode.Add("Dash", new Dash());
+        
         currentMode = knownMode["Walk"];
     }
-    public ChimeraAntMove(Rigidbody rigidbody) : this(rigidbody, rigidbody.transform.forward, 1, 0.02f) { }
+    public ChimeraAntMove(Rigidbody rigidbody) : this(rigidbody, rigidbody.transform.forward, 2, 0.02f) { }
 
 
     // Permet de gagner des mouvements et d'améliorer sa vitesse
@@ -115,6 +117,7 @@ public class RabbitMove : Movement
     public RabbitMove(Rigidbody rigidbody, Vector3 dir, float maxvitesse, float maxaccel) : base( rigidbody,  dir, maxvitesse,  maxaccel)
     {
         knownMode.Add("Dash",new Dash());
+        knownMode.Add("Jump", new Jump());
         knownMode.Add("Walk",new Walk());
         currentMode = knownMode["Walk"];
     }

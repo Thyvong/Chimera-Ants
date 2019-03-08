@@ -24,4 +24,9 @@ public class WhiteBear : Bear{
    		return false;
    	}*/
    	public override void other(){}
+
+    public override bool RunAway(Animal animal)
+    {
+        throw new System.NotImplementedException();
+    }
 }

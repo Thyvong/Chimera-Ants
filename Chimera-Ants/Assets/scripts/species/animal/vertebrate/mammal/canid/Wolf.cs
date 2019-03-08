@@ -2,15 +2,16 @@
 using UnityEngine;
 public class Wolf : Canid{
 
-	
+    public new static int familyBoidIdReference = 0;
+
+
     // Species method
     public override Species Reproduction(Species species){
 		
 		if(species.GetType() != typeof(Wolf)) return null;
 		
 		Wolf wolfFather = (Wolf) species;
-		Wolf wolfMother = (Wolf) this;
-        
+		Wolf wolfMother = this;
 		if (state != State.Leader || wolfFather.state != State.Leader){
 			return null;
 		} 
@@ -25,17 +26,18 @@ public class Wolf : Canid{
         string source = "Prefabs/WolfHybride";
 
     	Wolf wolfChild =( (GameObject)Instantiate(Resources.Load(source), transform.position - transform.forward*(2f), new Quaternion())).GetComponent<Wolf>();
-
-		/*if(sex == Sex.Male){
+        wolfChild.familyBoidId = familyBoidId;
+        /*if(sex == Sex.Male){
 			transform.localScale = new Vector3(12f,12f,12f);
 		}else{
 			transform.localScale = new Vector3(10f,10f,10f);
 		}*/
+        wolfChild.transform.parent = transform.parent;
 		isInReproductionTime = false;
 		return wolfChild;
     }
     
-	public void Feed(Species species){
+	public override void Feed(Species species){
 		if(species.GetType() == typeof(Animal)){
 			base.Feed(species);
 		}
@@ -63,67 +65,72 @@ public class Wolf : Canid{
 			state = State.Follower;
 		}
 	}
-	public void dangerEvaluation(Species species){}
-   	public override void other(){}
+	public override void DangerEvaluation(Species species){
+        base.DangerEvaluation(species);
 
-
-	public override void Start(){
-		//base.Start();
+    }
+   	
+	protected override void Awake()
+    {
+        base.Awake();
 
 		SetAnimalBoidId(1);
-
-		longevity = longevity * 8f;
+        lifePoint = 100;
+        baseLifePoint = 100;
+        longevity = longevity * 8f;
         strength = 100;
-		
-		if(sex == Sex.Male){
+        resistance = weight * 0.8f;
+        lifeStyle = LifeStyle.Settled;
+        hunger = 0;
+        visionRange = 5f;
+
+        if (sex == Sex.Male){
+            print("getting big");
 			weight = 20;
-			transform.localScale = new Vector3(12f,12f,12f);
+			transform.localScale += (transform.localScale * 0.05f);
 		}
 		else{
 			weight = 15;
-			transform.localScale = new Vector3(10f,10f,10f);
 		}
-		print("RaaaH");
 
-		familyBoidIdReference++;
-        familyBoidId = Animal.familyBoidIdReference;
+		
+        familyBoidId = familyBoidIdReference;
+        familyBoidIdReference++;
 
-        lifePoint = 100;
-        baseLifePoint = 100;
 
-        resistance = weight* 0.8f;
-        lifeStyle = LifeStyle.Settled;
-        speed = 6;
-        hunger = 0;
-        visionRange = 5f;
+        move = new RabbitMove(_rb);
 	}
-
-	public void OnTriggerEnter(Collider other){
-        
+    /*
+	protected override void OnTriggerEnter(Collider other){
+        base.OnTriggerEnter(other);
         //If the gameObject is an animal
-        if(other.gameObject.GetComponent<Wolf>() != null){
+        Wolf wolf = other.GetComponent<Wolf>();
+        if (wolf){
 			//If they have the same sex
-			if(other.gameObject.GetComponent<Wolf>().sex == sex){
-				//If it's a Challenger
-				if(state != State.Leader && other.gameObject.GetComponent<Wolf>().state == State.Leader){
-					int score = 3;
-					if(weight >  other.gameObject.GetComponent<Wolf>().weight){
-						score--;
-					}
-					if(longevity > other.gameObject.GetComponent<Wolf>().longevity){
-						score--;
-					}
-					if(lifePoint > other.gameObject.GetComponent<Wolf>().lifePoint){
-						score--;
-					}
-					if(score >= 2){
-						isWinner = true;
-					}
-				}
-			}			
+			if(wolf.sex == sex && state != wolf.state){
+                //If it's a Challenger
+                int score = 3;
+                if (weight < wolf.weight)
+                {
+                    score--;
+                }
+                if (longevity < wolf.longevity)
+                {
+                    score--;
+                }
+                if (lifePoint < wolf.lifePoint)
+                {
+                    score--;
+                }
+                if (score >= 2)
+                {
+                    isWinner = true;
+                }
+
+            }			
         }
 	}
-
+    */
 	public void OnTriggerStay(Collider other){
 		if(other.gameObject.GetComponent<Wolf>() != null){
 			//print("stay !!");
@@ -132,9 +139,37 @@ public class Wolf : Canid{
 		
 	}
 
-	public void Update(){
+    public override bool RunAway(Animal animal)
+    {
+        if (dangerLvl >= 30)
+        {
+            // ca rpz quoi ?
+            System.Random random = new System.Random();
+            int rand = random.Next(0, 10);
+
+            if (animal.dangerLvl > 3)
+            {
+                rand -= random.Next(0, animal.dangerLvl);
+            }
+
+            if (animal.dangerLvl <= 3)
+            {
+                rand += random.Next(0, animal.dangerLvl);
+            }
+
+            if (rand >= 50)
+            {
+                return true;
+            }
+
+        }
+        return false;
+    }
+    public override void other() { }
+
+    protected override void Update(){
 		base.Update();
-		familyBehaviour();
 
 	}
+
 }

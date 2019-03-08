@@ -1,12 +1,11 @@
 ﻿//This class represent all kind of animals and their behaviour
 using UnityEngine;
 using System.Collections.Generic;
-using System;
-
+using System.Linq;
 
 public abstract class Animal : Species, AnimalManager{
 
-
+    protected static System.Random rng;
     /* Status */
     public float strength { get; protected set; } //the strength value of an animal
     public float attackSpeed { get; protected set; }
@@ -25,9 +24,9 @@ public abstract class Animal : Species, AnimalManager{
     public int animalBoidId { get; protected set; } // personal id
     public int familyBoidId { get;  set; } // group id
     public static int familyBoidIdReference = 0;
-    public bool isInBoid = false;
-    public List<Animal> animalInBoids;
-    
+    public bool isInBoid = false; // activate if not targeting AND boids list not empty (aka theres a group to copy)
+    public List<GameObject> animalInBoids;
+    public float boidupdate = 0;
     
     public Movement move;
     
@@ -62,6 +61,10 @@ public abstract class Animal : Species, AnimalManager{
         base.Awake();
         FOV = GetComponent<SphereCollider>();
         move = new DefaultMove(_rb);
+        if (rng == null)
+        {
+            rng = new System.Random();
+        }
 
     }
 
@@ -107,47 +110,7 @@ public abstract class Animal : Species, AnimalManager{
     
 
     /*
-        //Fait
-        public virtual void Start(){
-            
-
-            if(state == State.Leader){
-                System.Random rand = new System.Random();
-                direction = new Vector3( rand.Next(-200,200), 0, rand.Next(-200,200));
-            }
-
-        }
-
-        //Fait
-        public void OnTriggerEnter(Collider other){
-            print("On trigger enter");
-            //If the gameObject is an animal
-            if(other.gameObject.GetComponent<Animal>() != null){
-
-                //If the animals belongs to the same family
-                if(other.gameObject.GetComponent<Animal>().familyBoidId == familyBoidId){
-
-                    if( animalInBoids.Contains(other.gameObject.GetComponent<Animal>()) == false){
-                            //Add to the list
-                            print("add");
-                            animalInBoids.Add(other.gameObject.GetComponent<Animal>());
-                    }                
-                }
-            }
-        }
-
-        public void OnTriggerExit(Collider other){
-
-            //If the animal leaves the trigger
-            if(other.gameObject.GetComponent<Animal>() != null){
-                //Remove the animal to the list
-                print("remove");
-                animalInBoids.Remove(other.gameObject.GetComponent<Animal>());
-
-
-            }
-        }
-
+        
         public virtual void Update(){
             
             if(animalInBoids != null){
@@ -179,46 +142,49 @@ public abstract class Animal : Species, AnimalManager{
     }
     public void boidBehaviour()
     {
-
-        if (isInBoid == true)
+        if (!isInBoid) return;
+        Vector3 mainDirection = Vector3.zero;
+        Vector3 groupCenter = Vector3.zero;
+        Vector3 newDirection = transform.forward;
+        float minDistance  = 99999.0f;
+        GameObject nearestNeighbour = null;
+        foreach (GameObject animal in animalInBoids)
         {
-
-            Animal nearestNeighbour = null;
-            float minDistance = 999999999f;
-
-            foreach (Animal animal in animalInBoids)
+            mainDirection += animal.transform.forward;
+            groupCenter += animal.transform.position;
+            // Selection of the nearest neighbour
+            if (Vector3.Distance(transform.position, animal.transform.position) < minDistance // plus proche de nous qu'un autre
+                // && animal.familyBoidId == familyBoidId  <=== à trier au moment de l'ajout à la list
+                // && minDistance > 3.5f  <=== on se rapproche frame par frame, pas plusieurs fois en une frame
+                )
             {
-
-                // Selection of the nearest neighbour
-                if (Vector3.Distance(transform.position, animal.transform.position) < minDistance && animal.familyBoidId == familyBoidId && minDistance > 3.5f)
-                {
-                    nearestNeighbour = animal;
-                    minDistance = Vector3.Distance(transform.position, animal.transform.position);
-
-                    //We come closer
-                    transform.position = Vector3.MoveTowards(transform.position, nearestNeighbour.transform.position, 0.1f);
-                    transform.LookAt(nearestNeighbour.transform.position);
-                    print("On s'approche");
-                }
+                nearestNeighbour = animal;
+                minDistance = Vector3.Distance(transform.position, animal.transform.position);
+                
             }
-
-            if (minDistance < 3.5f)
-            {
-                //We move away
-                transform.position = Vector3.MoveTowards(transform.position, nearestNeighbour.transform.position * (-1), 0.1f);
-                transform.LookAt(nearestNeighbour.transform.position * (-1));
-                print("On s'éloigne");
-            }
-
-            //We center
-            Vector3 direction = new Vector3(0, 0, 0);
-            foreach (Animal animal in animalInBoids)
-            {
-                direction += animal.transform.forward;
-            }
-            transform.LookAt(direction);
-            Deplacement(direction);
         }
+        // moyenne de la direction du groupe et calcul de son centre
+        mainDirection = mainDirection / animalInBoids.Count;
+        groupCenter =  groupCenter / animalInBoids.Count;
+        if (Vector3.Distance(transform.position, groupCenter) < 3.5f)
+        {
+            //We move away
+            newDirection = transform.position - nearestNeighbour.transform.position;
+            
+
+        }
+        else
+        {
+            //We come closer
+            newDirection = nearestNeighbour.transform.position - transform.position  ;
+            
+        }
+
+        //We center
+        newDirection = Vector3.Normalize( nearestNeighbour.transform.forward+mainDirection);
+        newDirection.y = transform.position.y;
+        Deplacement(newDirection);
+        
 
     }
     public abstract void groupBehaviour();
@@ -238,7 +204,7 @@ public abstract class Animal : Species, AnimalManager{
                     fleeing = false;
                     withinreach = false;
                     AssessSituation();
-                    print(name + " : I killed " + species.name);
+
                     print(target);
                     
                 }
@@ -252,7 +218,7 @@ public abstract class Animal : Species, AnimalManager{
     protected virtual void Deplacement(Vector3 direction)
     {
         move.Apply(direction);
-        print(name + " Moving at " + move.speed);
+
     }
     public void Wander()
     {
@@ -360,6 +326,25 @@ public abstract class Animal : Species, AnimalManager{
         }
         return animal;
     }
+    protected Animal ClosestEnemy()
+    {
+        List<Animal> list = EnemiesNearBy();
+        if (list == null) return null;
+        if (list.Count == 0) return null;
+        Animal closest = list[0];
+        float distance = 99999.0f;
+        float calcul = 0;
+        foreach(Animal animal in list)
+        {
+            calcul = Vector3.Distance(transform.position, animal.transform.position);
+            if ( calcul < distance)
+            {
+                distance = calcul;
+                closest = animal;
+            }
+        }
+        return closest;
+    }
     protected List<Species> FoodNearBy()
     {
         List<Species> food = new List<Species>();
@@ -394,9 +379,8 @@ public abstract class Animal : Species, AnimalManager{
     protected void ReactToEnemy(Animal ani)
     {
         DangerEvaluation(ani);
-        if (RunAway(ani) || ani.strength > strength)
+        if ( RunAway(ani))
         {
-            print(name + ": NIGEROOOOO ");
 
             attacking = false;
             fleeing = true;
@@ -406,7 +390,7 @@ public abstract class Animal : Species, AnimalManager{
         }
         else
         {
-            print(name + ": TATAKAI");
+
             attacking = true;
             fleeing = false;
             feeding = false;
@@ -422,7 +406,7 @@ public abstract class Animal : Species, AnimalManager{
         List<GameObject> cleanup = new List<GameObject>();
         foreach (GameObject obj in detected)
         {
-            if (obj != null && obj.transform.parent == null)
+            if (obj != null && obj.transform.parent.GetComponent<ChimeraAnt>() == null)
             {
                 cleanup.Add(obj);
             }
@@ -432,15 +416,12 @@ public abstract class Animal : Species, AnimalManager{
     
     void AssessSituation()
     {
-        
-        //UpdateDetected();
-        
-        List<Animal> enemy = EnemiesNearBy();
-        List<Animal> allies = AlliesNearBy();
+        UpdateDetected();
+        Animal enemy = ClosestEnemy();
         List<Species> food = FoodNearBy();
-        if (enemy.Count > 0)
+        if (enemy != null)
         {
-            ReactToEnemy(enemy[0]);
+            ReactToEnemy(enemy);
         }
         else
         {
@@ -450,7 +431,7 @@ public abstract class Animal : Species, AnimalManager{
                 attacking = false;
                 fleeing = false;
                 feeding = true;
-                move.direction = Vector3.Normalize(target.transform.position - transform.position); // sens opposé
+                move.direction = Vector3.Normalize(target.transform.position - transform.position); 
 
             }
             else{
@@ -461,7 +442,7 @@ public abstract class Animal : Species, AnimalManager{
     }
 
 
-    protected void OnTriggerEnter(Collider other)
+    protected virtual void OnTriggerEnter(Collider other)
     {
         if (dead) return;
         if (other.transform.parent)
@@ -473,28 +454,43 @@ public abstract class Animal : Species, AnimalManager{
         Species species = other.gameObject.GetComponent<Species>();
         if (species)
         {
+            if(!animalInBoids.Contains(other.gameObject) 
+                && species.GetType() == GetType() 
+                && ((Animal)species).familyBoidId == familyBoidId)
+            {
+                animalInBoids.Add(species.gameObject);
+            }
             if (!detected.Contains(other.gameObject))// predator or prey out of range
             {
+
                 detected.Add(other.gameObject);
                 AssessSituation();
             }
         }
 
     }
-    protected void OnTriggerExit(Collider other)
+    protected virtual void OnTriggerExit(Collider other)
     {
         if (dead) return;
         if (other is SphereCollider) return;
         Species species = other.gameObject.GetComponent<Species>();
         if (species)
         {
+            if (animalInBoids.Contains(other.gameObject))
+            {
+                animalInBoids.Remove(species.gameObject);
+            }
+            if (species.GetType() != GetType())
+            {
+                resetDangerLvl();
+
+            }
             if (detected.Contains(other.gameObject) )// predator or prey out of range
             {
                 detected.Remove(other.gameObject);
-                print(name + " : detection list is -" + detected.Count);
-                print(name + " : removing " + species.name + " from detection");
                 AssessSituation();
             }
+            
         }
         
 
@@ -540,7 +536,6 @@ public abstract class Animal : Species, AnimalManager{
     public abstract bool RunAway(Animal animal);
     public abstract void other();
 
-
     protected override void Death()
     {
         base.Death();
@@ -569,23 +564,22 @@ public abstract class Animal : Species, AnimalManager{
             feeding = false;
             withinreach = false;
             
-            if (hunger > 30)
+            UpdateDetected();
+            AssessSituation();
+            
+            if (target == null && (animalInBoids.Count != 0 && state != State.Leader ))
             {
-                // Cherche à manger
-                UpdateDetected();
-                List<Species> food = FoodNearBy();
-                if (food.Count != 0)
-                {
-                    if (food[0])
-                    {
-                        target = food[0];
-                        feeding = true;
-                        move.direction = target.transform.position - transform.position;
-                    }
-                }
+                isInBoid = true;
+                familyBehaviour();
             }
-            // déplacement
+            
+            else
+            {
+                isInBoid = false;
+                
+            }
             Wander();
+
         }
         else // Possède une cible
         {
@@ -641,7 +635,9 @@ public abstract class Animal : Species, AnimalManager{
         // dans tous les cas, le délai entre chaque attaque diminue
         if(attackCD>0)
             attackCD -= Time.deltaTime;
-
+        
+        boidupdate += Time.deltaTime;
+        
     }
 
     
