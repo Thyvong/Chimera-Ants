@@ -34,7 +34,7 @@ public class Tree : Vegetal{
 
     public override void Developpement(){
         longevity--;
-        transform.localScale *= 1.0001f; 
+        transform.localScale *= 1.0005f; 
     }
 
     private void Update(){

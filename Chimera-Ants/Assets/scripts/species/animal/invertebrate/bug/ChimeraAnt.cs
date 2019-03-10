@@ -90,7 +90,7 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
         string source = "Prefabs/";
 
         // Last part of Queen's life : Give birth to the future King
-        if (longevity <= 2000 && !_isKingBorn)
+        if (longevity <= 4000 && !_isKingBorn)
         {
 			//if it's a king we set a new family boid id
             source += "AntKing";
@@ -99,7 +99,7 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
         else
         {
             // Middle part of Queen's life : Give birth to the future King Guard
-            if (longevity <= 3750 && !_isKingBorn)
+            if (longevity <= 6000 && !_isKingBorn)
             {
                 source += "AntKingGuard";
             }
@@ -121,7 +121,7 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
 
         print("Instatiating " + source);
 
-        ChimeraAnt go =( (GameObject)Instantiate(Resources.Load(source), transform.position - transform.forward, new Quaternion())).GetComponent< ChimeraAnt>();
+        ChimeraAnt go =( (GameObject)Instantiate(Resources.Load(source), transform.position - transform.forward*1.5f, new Quaternion())).GetComponent< ChimeraAnt>();
         print("Transmitting movement ");
         ((ChimeraAntMove)move).InheritMovement((ChimeraAntMove)go.move); // transmitting queen's movement qualities to newborn
         go.queen = this;
@@ -419,7 +419,7 @@ public class ChimeraAnt : Bug, ChimeraAntManager{
                 SpawnChildren();
             
         }
-        if (longevity % 300 == 0)
+        if (longevity % 150 == 0)
         {
             if (status == ChimeraAntClass.Queen)
                 SpawnChildren();

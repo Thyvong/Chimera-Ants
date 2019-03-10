@@ -166,10 +166,10 @@ public abstract class Animal : Species, AnimalManager{
         // moyenne de la direction du groupe et calcul de son centre
         mainDirection = mainDirection / animalInBoids.Count;
         groupCenter =  groupCenter / animalInBoids.Count;
-        if (Vector3.Distance(transform.position, groupCenter) < 3.5f)
+        if (Vector3.Distance(transform.position, groupCenter) < 5f)
         {
             //We move away
-            newDirection = transform.position - nearestNeighbour.transform.position;
+            newDirection = /*transform.position*/ - nearestNeighbour.transform.position;
             
 
         }
